@@ -13,6 +13,7 @@ namespace ConsoleApp1
         public List<Node> Adjecants;
         public int X, Y;
         public int value;
+
         public Node(int x,int y,int value)
         {
             this.value = value;
@@ -46,16 +47,23 @@ namespace ConsoleApp1
             this.F = this.G + this.H;
         }
 
-        public void CalcH(int choice)
+        public void CalcH(int choice, Node goal)
         {
+            int i = 0, count = 0;
             switch (choice)
             {
                 case 0: /// Manhatten distance calculation
-
+                    this.H = Math.Abs(this.X-goal.X) + Math.Abs(this.Y - goal.Y);
                     break;
 
                 case 1:/// Hamming distance calculation
-
+                    while(i < goal.value.ToString().Length)
+                    {
+                        if (this.value.ToString()[i] != goal.value.ToString()[i])
+                            count++;
+                        i++;
+                    }
+                    this.H = count;
                     break;
             }
             

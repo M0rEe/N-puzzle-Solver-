@@ -35,7 +35,8 @@ namespace ConsoleApp1
             file.Close();
 
             Node[,] element = new Node [size,size]; 
-            Node startnode =new Node(9,9,9),child;
+            Node startnode =new Node(9,9,9),child,goal=new Node();
+            bool Reached_goal = false;
             for (int i = 0; i < size; i++)
             {
                 foreach (var el in Row[i])
@@ -44,19 +45,29 @@ namespace ConsoleApp1
                     element[i, j] = new Node(i,j,int.Parse(el));
                     //Console.Write(el + " " + element.X + " " + element.Y + " \\ "+ element.value);
                     if (el.Equals("0"))
+                    {
                         startnode = element[i,j];
+                        goal = element[i, j];
+                    }
                 }
                 Console.WriteLine();
             }
+            //better way can use priority queue insted of lists 
             List<Node> Openlst = new List<Node>();
             List<Node> Closedlst = new List<Node>();
-            Openlst.Add(startnode);
             //Console.Write(startnode.X + " " + startnode.Y + " \\ ");
+            startnode.G = 0;
+            startnode.CalcH(0, goal);
             startnode.F = 0;
+            Openlst.Add(startnode);
             Node temp;
+            
             while (Openlst.Count > 0)
             {
-                Openlst.Sort();
+                if (Reached_goal)
+                    break;
+                Console.WriteLine();
+                Openlst.Sort(); // if we used a oriority queue we dont need to sort it manually 
                 temp = Openlst.ElementAt(0);
                 for (int i = 0; i < 4; i++)
                 {
@@ -79,7 +90,19 @@ namespace ConsoleApp1
                         */
                     }
                 }
+                foreach(var neighbour in temp.Adjecants)
+                {
+                    if (neighbour.value == 0) //TODO: Goal condition we didnt detect our goal yet 
+                    {
+                        Reached_goal = true;
+                        break;
+                    }
+                    neighbour.G = temp.G + 1;//TODO:: what is our Goal? 
+                    neighbour.CalcH(1,goal); // 0 manhatten distance , 1 hamming distance 
+                    neighbour.CalcF();
+                }
                 Openlst.RemoveAt(0);
+                Closedlst.Add(temp);
                 Console.ReadLine();
             }
             Console.WriteLine("out");

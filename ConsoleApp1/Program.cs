@@ -53,22 +53,25 @@ namespace ConsoleApp1
                 Console.WriteLine();
             }
             //better way can use priority queue insted of lists 
-            List<Node> Openlst = new List<Node>();
+            PriorityQ<Node> Astarlist = new PriorityQ<Node>();
+            //List<Node> Openlst = new List<Node>();
             List<Node> Closedlst = new List<Node>();
-            //Console.Write(startnode.X + " " + startnode.Y + " \\ ");
+            Console.Write(startnode.X + " " + startnode.Y + " \\ ");
             startnode.G = 0;
             startnode.CalcH(0, goal);
             startnode.F = 0;
-            Openlst.Add(startnode);
+            Astarlist.Enqueue(startnode);
             Node temp;
             
-            while (Openlst.Count > 0)
+            while (Astarlist.Count() > 0)
             {
-                if (Reached_goal)
+                // if in manhattan then each node should be 0 from its index 
+                //if in hamming then the whole board should be 0 
+                if (Reached_goal) 
                     break;
                 Console.WriteLine();
-                Openlst.Sort(); // if we used a oriority queue we dont need to sort it manually 
-                temp = Openlst.ElementAt(0);
+                //Openlst.Sort(); // if we used a oriority queue we dont need to sort it manually 
+                temp = Astarlist.Peek();
                 for (int i = 0; i < 4; i++)
                 {
                     if(isValid(temp.X, temp.Y, i,size)) // check for availabilty of move 
@@ -100,9 +103,16 @@ namespace ConsoleApp1
                     neighbour.G = temp.G + 1;//TODO:: what is our Goal? 
                     neighbour.CalcH(1,goal); // 0 manhatten distance , 1 hamming distance 
                     neighbour.CalcF();
+                    neighbour.Parent = temp;
+                    Astarlist.Enqueue(neighbour);
+                    Console.WriteLine("neighbour data "+neighbour.value + "  " + neighbour.Parent.value);
+                    Console.WriteLine(neighbour.F);
                 }
-                Openlst.RemoveAt(0);
+                Astarlist.Dequeue();
                 Closedlst.Add(temp);
+                temp = Astarlist.Peek();
+                Console.WriteLine("astar peak "+temp.value + "  " + temp.Parent.value);
+                Console.WriteLine(Astarlist.Count());
                 Console.ReadLine();
             }
             Console.WriteLine("out");
@@ -130,7 +140,7 @@ namespace ConsoleApp1
             switch (i)
             {
                 case 0:
-                    if (x + 1 > size)
+                    if (x + 1 >= size)
                         return false;
                     else
                         return true;
@@ -140,7 +150,7 @@ namespace ConsoleApp1
                     else
                         return true;
                 case 2:
-                     if (y + 1 > size)
+                     if (y + 1 >= size)
                         return false;
                     else
                         return true;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    class Node : IComparer<Node>
+    class Node : IComparable<Node>
     {
         public Node Parent;
         public int G,F,H;
@@ -19,9 +19,9 @@ namespace ConsoleApp1
             this.value = value;
             this.X = x;
             this.Y = y;
-            this.G = 999999999;
-            this.H = 999999999;
-            this.F = 999999999;
+            this.G = 1;
+            this.H = 0;
+            this.F = 0;
             this.Parent = null;
             this.Adjecants = new List<Node>();
         }
@@ -69,34 +69,18 @@ namespace ConsoleApp1
             
         }
 
-        public Node Compare(Node x, Node y)
-        {
-            if (x.F < y.F)
-            {
-                return x;
-            }
-            return y;
-        }
-
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
         }
 
-        public override int GetHashCode()
+        public int CompareTo(Node other)
         {
-            var hashCode = 1006953623;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Node>.Default.GetHashCode(Parent);
-            hashCode = hashCode * -1521134295 + G.GetHashCode();
-            hashCode = hashCode * -1521134295 + F.GetHashCode();
-            hashCode = hashCode * -1521134295 + H.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<Node>>.Default.GetHashCode(Adjecants);
-            return hashCode;
-        }
-
-        int IComparer<Node>.Compare(Node x, Node y)
-        {
-            return ((IComparer<Node>)Parent).Compare(x, y);
+            if (other.F > this.F){
+                return 1;
+            }else{
+                return 0 ;
+            }
         }
     }
 }

@@ -6,22 +6,23 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    class Node : IComparer<Node>
+    class Node : IComparable<Node>
     {
         public Node Parent;
         public int G,F,H;
         public List<Node> Adjecants;
         public int X, Y;
         public int value;
-
+        public int [,]board;
+        public int[,] goal; 
         public Node(int x,int y,int value)
         {
             this.value = value;
             this.X = x;
             this.Y = y;
-            this.G = 999999999;
-            this.H = 999999999;
-            this.F = 999999999;
+            this.G = 1;
+            this.H = 0;
+            this.F = 0;
             this.Parent = null;
             this.Adjecants = new List<Node>();
         }
@@ -47,35 +48,33 @@ namespace ConsoleApp1
             this.F = this.G + this.H;
         }
 
-        public void CalcH(int choice, Node goal)
+        public void CalcH(int choice,int size)
         {
-            int i = 0, count = 0;
+            int count = 0;
             switch (choice)
             {
                 case 0: /// Manhatten distance calculation
-                    this.H = Math.Abs(this.X-goal.X) + Math.Abs(this.Y - goal.Y);
+                    int x=0, y=0;
+                    for (int i = 0;i< size;i++)
+                    {
+                        for (int j = 0;j< size; j++)
+                        {
+                            if (this.value == this.goal[i, j])
+                            {
+                                x = i;
+                                y = j;
+                                break;
+                            }
+                        }
+                    }
+                    this.H = Math.Abs(this.X-x) + Math.Abs(this.Y - y);
                     break;
 
                 case 1:/// Hamming distance calculation
-                    while(i < goal.value.ToString().Length)
-                    {
-                        if (this.value.ToString()[i] != goal.value.ToString()[i])
-                            count++;
-                        i++;
-                    }
-                    this.H = count;
+                    
                     break;
             }
             
-        }
-
-        public Node Compare(Node x, Node y)
-        {
-            if (x.F < y.F)
-            {
-                return x;
-            }
-            return y;
         }
 
         public override bool Equals(object obj)
@@ -83,20 +82,20 @@ namespace ConsoleApp1
             return base.Equals(obj);
         }
 
-        public override int GetHashCode()
+        public void swap(ref int x, ref int y)
         {
-            var hashCode = 1006953623;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Node>.Default.GetHashCode(Parent);
-            hashCode = hashCode * -1521134295 + G.GetHashCode();
-            hashCode = hashCode * -1521134295 + F.GetHashCode();
-            hashCode = hashCode * -1521134295 + H.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<List<Node>>.Default.GetHashCode(Adjecants);
-            return hashCode;
+            int t = x;
+            x = y;
+            y = t;
         }
 
-        int IComparer<Node>.Compare(Node x, Node y)
+        public int CompareTo(Node other)
         {
-            return ((IComparer<Node>)Parent).Compare(x, y);
+            if (other.F < this.F){
+                return 1;
+            }else{
+                return 0 ;
+            }
         }
     }
 }

@@ -13,7 +13,8 @@ namespace ConsoleApp1
         public List<Node> Adjecants;
         public int X, Y;
         public int value;
-
+        public int [,]board;
+        public int[,] goal; 
         public Node(int x,int y,int value)
         {
             this.value = value;
@@ -47,23 +48,30 @@ namespace ConsoleApp1
             this.F = this.G + this.H;
         }
 
-        public void CalcH(int choice, Node goal)
+        public void CalcH(int choice,int size)
         {
-            int i = 0, count = 0;
+            int count = 0;
             switch (choice)
             {
                 case 0: /// Manhatten distance calculation
-                    this.H = Math.Abs(this.X-goal.X) + Math.Abs(this.Y - goal.Y);
+                    int x=0, y=0;
+                    for (int i = 0;i< size;i++)
+                    {
+                        for (int j = 0;j< size; j++)
+                        {
+                            if (this.value == this.goal[i, j])
+                            {
+                                x = i;
+                                y = j;
+                                break;
+                            }
+                        }
+                    }
+                    this.H = Math.Abs(this.X-x) + Math.Abs(this.Y - y);
                     break;
 
                 case 1:/// Hamming distance calculation
-                    while(i < goal.value.ToString().Length)
-                    {
-                        if (this.value.ToString()[i] != goal.value.ToString()[i])
-                            count++;
-                        i++;
-                    }
-                    this.H = count;
+                    
                     break;
             }
             
@@ -74,9 +82,16 @@ namespace ConsoleApp1
             return base.Equals(obj);
         }
 
+        public void swap(ref int x, ref int y)
+        {
+            int t = x;
+            x = y;
+            y = t;
+        }
+
         public int CompareTo(Node other)
         {
-            if (other.F > this.F){
+            if (other.F < this.F){
                 return 1;
             }else{
                 return 0 ;

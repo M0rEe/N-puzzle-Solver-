@@ -6,79 +6,92 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    class PriorityQ<T> where T : IComparable<T>
+    class PriorityQ //where T : IComparable<T>
     {
-        private List<T> data;
+
+        public Node[] Arr;
+        int length = 0;
+
+        public void enqueue(Node x)
+        {
+            insert_value(x);
+        }
+        public Node dequeue()
+        {
+            return extract_min();
+        }
+
+        public bool empty()
+        {
+            return (length == 0);
+        }
+
         public PriorityQ()
         {
-            this.data = new List<T>();
+            Arr = new Node[100000000];
+        }
+        public int count() { return length; }
+
+        void insert_value(Node val)
+        {
+            length = length + 1;
+            Arr[length] = null;  //assuming all the numbers greater than 0 are to be inserted in queue.
+            increase_value(length, val);
         }
 
-        public void Enqueue(T item)
+        public void increase_value(int i, Node val)
         {
-            data.Add(item);
-            int ci = data.Count - 1; // child index; start at end
-            while (ci > 0)
+            Arr[i] = val;
+            while (i > 1 && Arr[i / 2].F >= Arr[i].F)
             {
-                int pi = (ci - 1) / 2; // parent index
-                if (data[ci].CompareTo(data[pi]) >= 0) break; // child item is larger than (or equal) parent so we're done
-                T tmp = data[ci];
-                data[ci] = data[pi];
-                data[pi] = tmp;
-                ci = pi;
+                swap(ref Arr[i / 2], ref Arr[i]);
+                i = i / 2;//1
+            }
+        }
+        void min_heapify(int i, int N)
+        {
+            // to get index of left child of Node at index i 
+            int left = 2 * i;
+            // to get index of right child of Node at index i
+            int right = 2 * i + 1;
+            int smallest;
+
+            if (left <= N && Arr[left].F < Arr[i].F)
+                smallest = left;
+            else
+                smallest = i;
+            if (right <= N && Arr[right].F < Arr[smallest].F)//1
+                smallest = right;
+            if (smallest != i)//1
+            {
+                swap(ref Arr[i], ref Arr[smallest]);//1
+                min_heapify(smallest, N);
             }
         }
 
-        public T Dequeue()
-        {
-            // assumes pq is not empty; up to calling code
-            int li = data.Count - 1; // last index (before removal)
-            T frontItem = data[0];   // fetch the front
-            data[0] = data[li];
-            data.RemoveAt(li);
 
-            --li; // last index (after removal)
-            int pi = 0; // parent index. start at front of pq
-            while (true)
+        void build_minheap(int N)
+        {
+            for (int i = N / 2; i >= 1; i--)
+                min_heapify(i, N);
+        }
+        void swap(ref Node x, ref Node y)//1
+        {
+            Node t = x;
+            x = y;
+            y = t;
+        }
+        Node extract_min()
+        {
+            if (length == 0)
             {
-                int ci = pi * 2 + 1; // left child index of parent
-                if (ci > li) break;  // no children so done
-                int rc = ci + 1;     // right child
-                if (rc <= li && data[rc].CompareTo(data[ci]) < 0) // if there is a rc (ci + 1), and it is smaller than left child, use the rc instead
-                    ci = rc;
-                if (data[pi].CompareTo(data[ci]) <= 0) break; // parent is smaller than (or equal to) smallest child so done
-                T tmp = data[pi]; data[pi] = data[ci]; data[ci] = tmp; // swap parent and child
-                pi = ci;
+                throw new InvalidOperationException("Can’t remove element as queue is empty");
             }
-            return frontItem;
+            Node min = Arr[1];
+            Arr[1] = Arr[length];//1
+            length = length - 1;//
+            min_heapify(1, length);
+            return min;
         }
-
-        public T Peek()
-        {
-            T frontItem = data[0];
-            return frontItem;
-        }
-
-        public int Count()
-        {
-            return data.Count;
-        }
-
-        public bool IsConsistent()
-        {
-            // is the heap property true for all data?
-            if (data.Count == 0) return true;
-            int li = data.Count - 1; // last index
-            for (int pi = 0; pi < data.Count; ++pi) // each parent index
-            {
-                int lci = 2 * pi + 1; // left child index
-                int rci = 2 * pi + 2; // right child index
-
-                if (lci <= li && data[pi].CompareTo(data[lci]) > 0) return false; // if lc exists and it's greater than parent then bad.
-                if (rci <= li && data[pi].CompareTo(data[rci]) > 0) return false; // check the right child too.
-            }
-            return true; // passed all checks
-        } // IsConsistent
-     // PriorityQueue
     }
 }

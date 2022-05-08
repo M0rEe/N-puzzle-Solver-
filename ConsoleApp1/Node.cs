@@ -14,7 +14,8 @@ namespace ConsoleApp1
         public int X, Y;
         public int value;
         public int [,]board;
-        public int[,] goal; 
+        public int[,] goal;
+        public int level;
         public Node(int x,int y,int value)
         {
             this.value = value;
@@ -54,24 +55,36 @@ namespace ConsoleApp1
             switch (choice)
             {
                 case 0: /// Manhatten distance calculation
-                    int x=0, y=0;
-                    for (int i = 0;i< size;i++)
+                    int Col = 0;
+                    int Row = 0;
+                    for (int i = 0; i < size; i++)
                     {
-                        for (int j = 0;j< size; j++)
+                        for (int j = 0; j < size; j++)
                         {
-                            if (this.value == this.goal[i, j])
+                            if (this.board[i, j] == 0) continue;
+                            else if (this.board[i, j] != ((i * size + j) + 1))
                             {
-                                x = i;
-                                y = j;
-                                break;
+                                Col = ((this.board[i, j] - 1) % size);
+                                Row = (this.board[i, j] - 1) / size;
+                                count += Math.Abs(Row - i) + Math.Abs(Col - j);
                             }
                         }
                     }
-                    this.H = Math.Abs(this.X-x) + Math.Abs(this.Y - y);
+                    this.H = count;
                     break;
 
                 case 1:/// Hamming distance calculation
-                    
+                    for (int i = 0; i < size; i++)
+                    {
+                        for (int j = 0; j < size; j++)
+                        {
+                            if (this.board[i, j] == 0) continue;
+                            if (this.board[i, j] != this.goal[i,j]) count++;
+                            
+                        }
+                    }
+
+                    this.H = count;
                     break;
             }
             
@@ -88,10 +101,10 @@ namespace ConsoleApp1
             x = y;
             y = t;
         }
-
+        
         public int CompareTo(Node other)
         {
-            if (other.F < this.F){
+            if (other.H < this.H){
                 return 1;
             }else{
                 return 0 ;

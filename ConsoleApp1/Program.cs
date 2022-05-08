@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ConsoleApp1
 {
@@ -17,7 +16,7 @@ namespace ConsoleApp1
             string line;
             TextReader origConsole = Console.In;
 
-            file = new FileStream("8 Puzzle (1).txt", FileMode.Open, FileAccess.Read);
+            file = new FileStream("test.txt", FileMode.Open, FileAccess.Read);
 
             sr = new StreamReader(file);
             line = sr.ReadLine();
@@ -41,21 +40,11 @@ namespace ConsoleApp1
                 indexi = i;
             }
             goal[indexi, indexj] = 0;
-            /*
-            for (int i =0;i<size;i++)
-            {
-                for (int j =0; j< size;j++)
-                {
-                    Console.Write(goal[i, j] );
-                }
-                Console.WriteLine();
-            }
-            */
             sr.Close();
             file.Close();
-            int[,] board  =new int[size,size]; 
+            int[,] board  =new int[size,size];
             Node[,] element = new Node [size,size];
-            Node startnode = new Node(9, 9, 9), child;
+            Node startnode = new Node(9, 9, 9);
             for (int i = 0; i < size; i++)
             {
                 foreach (var el in Row[i])
@@ -64,7 +53,6 @@ namespace ConsoleApp1
                     element[i, j] = new Node(i,j,int.Parse(el));
                     board[i, j] = int.Parse(el);
                     element[i, j].goal = goal;
-                    //Console.Write(el + " " + element.X + " " + element.Y + " \\ "+ element.value);
                     if (el.Equals("0"))
                     {
                         startnode = element[i,j];
@@ -73,75 +61,84 @@ namespace ConsoleApp1
                 }
             }
             //better way can use priority queue insted of lists 
-            PriorityQ<Node> Astarlist = new PriorityQ<Node>();
-            //List<Node> Openlst = new List<Node>();
-            List<Node> Closedlst = new List<Node>();
+            PriorityQ Astarlist = new PriorityQ();
             Console.WriteLine("Start node at x,y "+startnode.X + " " + startnode.Y );
             startnode.board = board;
             startnode.G = 0;
             startnode.CalcH(0,size);
             startnode.CalcF();
-            Astarlist.Enqueue(startnode);
-            Node temp;
-            
-            while (Astarlist.Count() > 0)
+            startnode.level = 0;
+            startnode.Parent = null;
+            Astarlist.enqueue(startnode);
+            Node temp = new Node();
+            bool ReachedGoal = false;
+            while (!Astarlist.empty()) 
             {
-                // if in manhattan then each node should be 0 from its index 
-                //if in hamming then the whole board should be 0 
-                temp = Astarlist.Peek();
-                if (temp.H == 0)  //if the heuristic value to the peek node is 0 then we reached our goal 
+                temp = Astarlist.dequeue();
+                if (temp.H == 0)
+                { //if the heuristic value to the peek node is 0 then we reached our goal 
+                    ReachedGoal = true;
+                    Console.WriteLine("Found the goal ");
                     break;
-       
+                }
+
                 for (int i = 0; i < 4; i++)
                 {
-                    if(isValid(temp.X, temp.Y, i,size)) // check for availabilty of move 
+                    // check for availabilty of move 
+                    if (isValid(temp.X, temp.Y, i,size)) 
                     {
                         Tuple<int ,int> index = Move(temp.X, temp.Y,i);
-                        child = element[index.Item1, index.Item2];
+                        Node child = new Node();
+                        child.value = temp.board[index.Item1, index.Item2];
+                        child.Adjecants = new List<Node>();
                         child.board = new int[size, size];
+                        //copying parent board 
                         Array.Copy(temp.board,child.board,size*size);
-                        Console.WriteLine(child.board[temp.X, temp.Y]);
                         child.swap(ref child.board[temp.X,temp.Y], ref child.board[index.Item1, index.Item2]);
                         child.X = index.Item1;
                         child.Y = index.Item2;
-                        Console.WriteLine("Changed to ");
-                        Console.WriteLine(child.board[temp.X, temp.Y]);
-                        temp.Adjecants.Add(child);
+                        child.level = temp.level + 1;
+                        child.Parent = temp;
+                        //condition to handle not to add the same node from path before
+                        if (!(temp.Parent != null && temp.Parent.X == child.X && temp.Parent.Y == child.Y)) 
+                        {
+                            temp.Adjecants.Add(child);
+                        }
                         /*  
                          *  (x+1 , y) down , (x-1 , y) up ,
                          *  (x , y+1) right  , (x ,y-1) left
                          *   down 0 , up 1 ,right 2 , left 3
                          */
-                        
+                    }
+                    else
+                    {
+                        continue;
                     }
                 }
 
                 foreach(var neighbour in temp.Adjecants)
                 {
-                    /*
-                    if (neighbour.value == 0) //TODO: Goal condition we didnt detect our goal yet 
-                    {
-                        Reached_goal = true;
-                        break;
-                    }
-                    */
-                    neighbour.G = temp.G + 1;//TODO:: what is our Goal? 
-                    neighbour.CalcH(0,size); // 0 manhatten distance , 1 hamming distance 
+                    neighbour.G = temp.G + 1;
+                    // 0 Manhatten distance , 1 Hamming distance 
+                    neighbour.CalcH(0,size); 
                     neighbour.CalcF();
                     neighbour.Parent = temp;
-                    Astarlist.Enqueue(neighbour);
-                    Console.WriteLine("Neighbour data "+neighbour.value);
-                    Console.WriteLine("Manhattan distance ");
-                    Console.WriteLine(neighbour.H);
+                    Astarlist.enqueue(neighbour);
                 }
-                Astarlist.Dequeue();
-                Closedlst.Add(temp);
-                temp = Astarlist.Peek();
-                Console.WriteLine("astar peak "+temp.value + "  " + temp.Parent.value);
-                Console.WriteLine(Astarlist.Count());
-                Console.ReadLine();
             }
-            Console.WriteLine("out");
+
+            if (!ReachedGoal)
+            {
+               Console.WriteLine("out of the while ");
+            }
+            else
+            {
+                Console.Write("# of movements ");
+                Console.Write(temp.level);
+                Console.WriteLine();
+            }
+
+
         }
 
         private static Tuple<int , int> Move(int x, int y,int i)

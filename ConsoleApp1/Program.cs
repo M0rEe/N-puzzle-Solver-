@@ -16,7 +16,7 @@ namespace ConsoleApp1
             string line;
             TextReader origConsole = Console.In;
 
-            file = new FileStream("test.txt", FileMode.Open, FileAccess.Read);
+            file = new FileStream("C:/Users/EGYPT/source/repos/N-puzzle-Solver-/Testcases/Complete/Complete Test/Solvable puzzles/Manhattan & Hamming/99 Puzzle - 1.txt", FileMode.Open, FileAccess.Read);
 
             sr = new StreamReader(file);
             line = sr.ReadLine();
@@ -65,7 +65,7 @@ namespace ConsoleApp1
             Console.WriteLine("Start node at x,y "+startnode.X + " " + startnode.Y );
             startnode.board = board;
             startnode.G = 0;
-            startnode.CalcH(0,size);
+            startnode.CalcH(1,size);
             startnode.CalcF();
             startnode.level = 0;
             startnode.Parent = null;

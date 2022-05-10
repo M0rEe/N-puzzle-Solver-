@@ -20,14 +20,15 @@ namespace ConsoleApp1
             sr = new StreamReader(file);
             line = sr.ReadLine();
             size = int.Parse(line);
-            line = sr.ReadLine();
             int[,] goal = new int[size, size];
-
+            line = sr.ReadLine();
+            
             Dictionary<int, List<string>> Row = new Dictionary<int, List<string>>();
             int indexi=0 , indexj=0;
             for (int i = 0; i < size; i++)
             {
                 line = sr.ReadLine();
+                
                 Row.Add(i, new List<string>());
                 List<string> vertices = line.Split(' ').ToList();
                 Row[i] = vertices;
@@ -42,6 +43,7 @@ namespace ConsoleApp1
             goal[indexi, indexj] = 0;
             sr.Close();
             file.Close();
+
             //solavable or 
             int cnt = 0;
             string[] temp_arr = new string[size * size];
@@ -57,7 +59,7 @@ namespace ConsoleApp1
             int[,] board  =new int[size,size];
             int heuristic = 1;
             Node[,] element = new Node [size,size];
-            Node startnode = new Node(9, 9, 9);
+            Node startnode = new Node();
             Node End = new Node(); 
             for (int i = 0; i < size; i++)
             {
@@ -66,7 +68,6 @@ namespace ConsoleApp1
                     int j = Row[i].IndexOf(el);
                     element[i, j] = new Node(i,j,int.Parse(el));
                     board[i, j] = int.Parse(el);
-                    element[i, j].goal = goal;
                     if (el.Equals("0"))
                     {
                         startnode = element[i,j];
@@ -78,75 +79,92 @@ namespace ConsoleApp1
             Console.Write("Checking For solvability of the input ");
             System.Threading.Thread.Sleep(500);
             Console.Write(".");
-            System.Threading.Thread.Sleep(600);
+            System.Threading.Thread.Sleep(500);
             Console.Write(".");
-            System.Threading.Thread.Sleep(700);
+            System.Threading.Thread.Sleep(500);
             Console.WriteLine(".");
 
 
             Stopwatch valid = new Stopwatch();
             valid.Start();
-            bool x = CheckSolvability(size, Row, temp_arr);
+            bool Sol = CheckSolvability(size, Row, temp_arr);
             valid.Stop();
-            if (x)
+            if (Sol)
             {
                 Console.Write(">>>");
                 Console.WriteLine("Solvable");
-                Console.WriteLine("What heuristic function do you want to use ?? [0]Manhattan  OR   [1]Hamming  ");
-                heuristic = int.Parse(Console.ReadLine());
-                if(heuristic != 1 && heuristic != 0)
+                Console.WriteLine("What algorithim do you want to be used??   [0]A*   OR  [1]BFS");
+                int ch = int.Parse(Console.ReadLine());
+                if (ch == 0) 
                 {
-                    Console.WriteLine("Invalid input");
-                    return;
-                }
-                Stopwatch stopwatch = new Stopwatch();
-                // Begin timing
-                stopwatch.Start();
-
-                System.Threading.Thread.Sleep(500);
-                PriorityQ Astarlist = new PriorityQ();
-                Console.WriteLine("Start node at x,y " + startnode.X + " " + startnode.Y);
-                startnode.board = board;
-                startnode.goal = goal;
-                startnode.G = 0;
-                startnode.CalcH(heuristic, size);
-                startnode.CalcF();
-                startnode.level = 0;
-                startnode.Parent = null;
-                Astarlist.enqueue(startnode);
-                Node temp = new Node();
-                bool ReachedGoal = false;
-
-                while (!Astarlist.empty())
-                {
-                    temp = Astarlist.dequeue();
-                    //if the heuristic value to the peek node is 0 then we reached our goal 
-                    if (temp.H == 0)
-                    { 
-                        ReachedGoal = true;
-                        Console.WriteLine("Found the goal ");
-                        break;
+                    Console.WriteLine("What heuristic function do you want to use ?? [0]Manhattan  OR   [1]Hamming  ");
+                    heuristic = int.Parse(Console.ReadLine());
+                    if(heuristic != 1 && heuristic != 0)
+                    {
+                        Console.WriteLine("Invalid input");
+                        return;
                     }
-                    temp.GetAdjecents(size,Astarlist,heuristic);
+                    Stopwatch stopwatch = new Stopwatch();
 
-                    temp.Adjecants = null;
-                    temp = null;
-                    
-                }
-                stopwatch.Stop();
-
-
-                if (!ReachedGoal)
+                    bool ReachedGoal = false;
+                    // Begin timing
+                    stopwatch.Start();
+                    System.Threading.Thread.Sleep(500);
+                    Node temp = startnode.Astar(startnode, board, size, goal, heuristic, ref ReachedGoal);
+                    stopwatch.Stop();
+                    if (!ReachedGoal)
+                    {
+                        Console.WriteLine("out of the while ");
+                    }
+                    else
+                    {
+                        Console.Write("# of movements ");
+                        Console.Write(temp.level);
+                        End = temp;
+                        Console.WriteLine();
+                        Console.WriteLine("Time : {0}", stopwatch.Elapsed);
+                    }
+                }else if (ch == 1)
                 {
-                    Console.WriteLine("out of the while ");
-                }
-                else
-                {
-                    Console.Write("# of movements ");
-                    Console.Write(temp.level);
-                    End = temp;
-                    Console.WriteLine();
-                    Console.WriteLine("Time : {0}", stopwatch.Elapsed);
+                    BFSNode[,] graph = new BFSNode[size, size];
+                    BFSNode firstnode = new BFSNode();
+                    for (int i = 0; i < size; i++)
+                    {
+                        foreach (var el in Row[i])
+                        {
+                            int j = Row[i].IndexOf(el);
+                            graph[i, j] = new BFSNode(size, int.Parse(el), board)
+                            {
+                                Parent = null,
+                                X = i,
+                                Y = j,
+                                
+                            };
+                            board[i, j] = int.Parse(el);
+                            if (el.Equals("0"))
+                            {
+                                firstnode = graph[i, j];
+                            }
+                        }
+                    }
+                    BFSNode final = firstnode.BFS(firstnode,size,goal);
+                    if (final != null)
+                    {
+                        Console.WriteLine("Found the goal ");
+                        Console.WriteLine("board ");
+                        for (int i =0;i< size;i++)
+                        {
+                            for (int j =0;j < size; j++)
+                            {
+                                Console.Write(final.board[i, j]);
+                            }
+                            Console.WriteLine();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Returned null");
+                    }
                 }
             }
             else
@@ -161,12 +179,14 @@ namespace ConsoleApp1
             {
                 Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
                 int C = int.Parse(Console.ReadLine());
-                Printpath(End,size,C);
+                if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
+                else Printpath(End,size,C);
                 Console.WriteLine();
             }
             Console.WriteLine("Executed Successfully .... !!");
+            Console.ReadKey();
         }
-
+        
         static int InversionCount(int N, string[] puzzle)
         {
             int cnt = 0;

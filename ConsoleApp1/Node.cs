@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace ConsoleApp1
 {
-    enum Dir { down  , up  , right  , left };
     class Node 
     {
         public Node Parent;
@@ -13,10 +12,9 @@ namespace ConsoleApp1
         public int X, Y;
         public int value;
         public int [,]board;
-        public int[,] goal;
         public int level;
         public int direction;
-        public Node(int x,int y,int value)
+        public Node(int x, int y, int value)
         {
             this.value = value;
             this.X = x;
@@ -27,12 +25,11 @@ namespace ConsoleApp1
             this.Parent = null;
             this.Adjecants = new List<Node>();
         }
-
         public Node()
         {
         }
 
-        public Node(Node parent, int g, int f, int h, List<Node> adjecants, int x, int y,int value)
+        public Node(Node parent, int g, int f, int h, List<Node> adjecants, int x, int y, int value)
         {
             Parent = parent;
             G = g;
@@ -44,12 +41,7 @@ namespace ConsoleApp1
             this.value = value;
         }
 
-        public void CalcF()
-        {
-            this.F = this.G + this.H;
-        }
-
-        public void CalcH(int choice,int size)
+        public void CalcH(int choice,int size,int [,]goal)
         {
             int count = 0;
             switch (choice)
@@ -79,7 +71,7 @@ namespace ConsoleApp1
                         for (int j = 0; j < size; j++)
                         {
                             if (this.board[i, j] == 0) continue;
-                            if (this.board[i, j] != this.goal[i,j]) count++;
+                            if (this.board[i, j] != goal[i,j]) count++;
                             
                         }
                     }
@@ -89,7 +81,7 @@ namespace ConsoleApp1
             }
             
         }
-        public void GetAdjecents(int size ,PriorityQ Astarlist,int heuristic )
+        public void GetAdjecents(int size ,PriorityQ Astarlist,int heuristic,int [,]goal  )
         {
 
             for (int i = 0; i < 4; i++)
@@ -100,7 +92,6 @@ namespace ConsoleApp1
                     Tuple<int, int> index = Move(this.X, this.Y, i);
                     Node child = new Node
                     {
-                        goal = goal,
                         value = this.board[index.Item1, index.Item2],
                         Adjecants = new List<Node>(),
                         board = new int[size, size]
@@ -134,11 +125,41 @@ namespace ConsoleApp1
             {
                 neighbour.G = this.G + 1;
                 // 0 Manhatten distance , 1 Hamming distance 
-                neighbour.CalcH(heuristic, size);
-                neighbour.CalcF();
+                neighbour.CalcH(heuristic, size,goal);
+                neighbour.F = neighbour.G + neighbour.H;
                 neighbour.Parent = this;
                 Astarlist.enqueue(neighbour);
             }
+        }
+        public Node Astar(Node startnode,int [,]board,int size,int[,]goal,int heuristic ,ref bool ReachedGoal)
+        {
+            PriorityQ Astarlist = new PriorityQ();
+            Console.WriteLine("Start node at x,y " + startnode.X + " " + startnode.Y);
+            startnode.board = board;
+            startnode.G = 0;
+            startnode.CalcH(heuristic, size, goal);
+            startnode.F = startnode.G + startnode.H;
+            startnode.level = 0;
+            startnode.Parent = null;
+            Astarlist.enqueue(startnode);
+            Node temp = new Node();
+            while (!Astarlist.empty())
+            {
+                temp = Astarlist.dequeue();
+                //if the heuristic value to the peek node is 0 then we reached our goal 
+                if (temp.H == 0)
+                {
+                    ReachedGoal = true;
+                    Console.WriteLine("Found the goal ");
+                    return temp;
+                }
+                temp.GetAdjecents(size, Astarlist, heuristic, goal);
+
+                temp.Adjecants = null;
+                temp = null;
+
+            }
+            return null;
         }
         private static Tuple<int, int> Move(int x, int y, int i)
         {

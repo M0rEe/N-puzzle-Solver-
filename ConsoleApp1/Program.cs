@@ -17,7 +17,7 @@ namespace ConsoleApp1
             string line;
             TextReader origConsole = Console.In;
 
-            file = new FileStream("C:/Users/EGYPT/source/repos/N-puzzle-Solver-/Testcases/Sample/Sample Test/Solvable Puzzles/8 Puzzle (1).txt", FileMode.Open, FileAccess.Read);
+            file = new FileStream("C:/Users/EGYPT/source/repos/N-puzzle-Solver-/Testcases/Sample/Sample Test/Solvable Puzzles/8 Puzzle (2).txt", FileMode.Open, FileAccess.Read);
 
             sr = new StreamReader(file);
             line = sr.ReadLine();
@@ -30,6 +30,7 @@ namespace ConsoleApp1
             for (int i = 0; i < size; i++)
             {
                 line = sr.ReadLine();
+                
                 Row.Add(i, new List<string>());
                 List<string> vertices = line.Split(' ').ToList();
                 Row[i] = vertices;

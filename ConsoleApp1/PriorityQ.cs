@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ConsoleApp1
 {
@@ -11,6 +8,11 @@ namespace ConsoleApp1
 
         public Node[] Arr;
         int length = 0;
+
+        public PriorityQ()
+        {
+            Arr = new Node[100000000];
+        }
 
         public void enqueue(Node x)
         {
@@ -26,10 +28,6 @@ namespace ConsoleApp1
             return (length == 0);
         }
 
-        public PriorityQ()
-        {
-            Arr = new Node[100000000];
-        }
         public int count() { return length; }
 
         void insert_value(Node val)
@@ -69,12 +67,6 @@ namespace ConsoleApp1
             }
         }
 
-
-        void build_minheap(int N)
-        {
-            for (int i = N / 2; i >= 1; i--)
-                min_heapify(i, N);
-        }
         void swap(ref Node x, ref Node y)//1
         {
             Node t = x;

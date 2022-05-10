@@ -61,7 +61,8 @@ namespace ConsoleApp1
                     {
                         for (int j = 0; j < size; j++)
                         {
-                            if (this.board[i, j] == 0) continue;
+                            if (this.board[i, j] == 0) 
+                                continue;
                             else if (this.board[i, j] != ((i * size + j) + 1))
                             {
                                 Col = ((this.board[i, j] - 1) % size);
@@ -78,7 +79,8 @@ namespace ConsoleApp1
                     {
                         for (int j = 0; j < size; j++)
                         {
-                            if (this.board[i, j] == 0) continue;
+                            if (this.board[i, j] == 0)
+                                continue;
                             if (this.board[i, j] != this.goal[i,j]) count++;
                             
                         }

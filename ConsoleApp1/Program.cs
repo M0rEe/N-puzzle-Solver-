@@ -44,6 +44,8 @@ namespace ConsoleApp1
             goal[indexi, indexj] = 0;
             sr.Close();
             file.Close();
+
+
             //solavable or 
             int cnt = 0;
             string[] temp_arr = new string[size * size];
@@ -94,7 +96,7 @@ namespace ConsoleApp1
             {
                 Console.Write(">>>");
                 Console.WriteLine("Solvable");
-                Console.WriteLine("What heuristic function do you want to use ?? [0]Manhattan  OR   [1]Hamming  ");
+                Console.WriteLine("What heuristic function do you want to use ?? [0] Manhattan  OR   [1] Hamming  ");
                 heuristic = int.Parse(Console.ReadLine());
                 if(heuristic != 1 && heuristic != 0)
                 {
@@ -156,9 +158,13 @@ namespace ConsoleApp1
                 Console.Write(">>>");
                 Console.WriteLine("NOT Solvable");
             }
+
+
             Console.WriteLine("Time of solvability : {0}", valid.Elapsed);
             Console.WriteLine("Do you want to print all steps ??   [Y]   OR   [N]");
             string choice = Console.ReadLine();
+
+
             if (choice.ToLower().Equals("y"))
             {
                 Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");

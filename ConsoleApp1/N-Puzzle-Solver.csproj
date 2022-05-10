@@ -99,6 +99,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BFSNode.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="PriorityQ.cs" />
     <Compile Include="Program.cs" />

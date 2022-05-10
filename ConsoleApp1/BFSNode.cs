@@ -50,10 +50,7 @@ namespace ConsoleApp1
             while(openlist.Count > 0 )
             {
                 BFSNode current = openlist[0];
-                closedlist.Add(current);
-                openlist.RemoveAt(0);
                 current.GetAdjecents(size);
-
                 foreach (var child in current.Adjecents)
                 {
                     if (Checkboard(child.board, goalboard, size))
@@ -70,6 +67,9 @@ namespace ConsoleApp1
                         count++;
                     }
                 }
+                closedlist.Add(current);
+                openlist.RemoveAt(0);
+
             }
             return null;
         }

@@ -25,9 +25,14 @@ namespace ConsoleApp1
             
             Dictionary<int, List<string>> Row = new Dictionary<int, List<string>>();
             int indexi=0 , indexj=0;
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < size; )
             {
-                line = sr.ReadLine();
+                if(line == "")
+                {
+                    line = sr.ReadLine();
+                    i = 0;
+                    continue;
+                }
                 Row.Add(i, new List<string>());
                 List<string> vertices = line.Split(' ').ToList();
                 Row[i] = vertices;
@@ -37,6 +42,8 @@ namespace ConsoleApp1
                     indexj = j;
                 }
                 indexi = i;
+                i++;
+                line = sr.ReadLine();
             }
             
             goal[indexi, indexj] = 0;

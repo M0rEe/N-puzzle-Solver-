@@ -63,6 +63,7 @@ namespace ConsoleApp1
                     {
                         count++;
                         Console.WriteLine("Found Goal ");
+
                         Console.WriteLine("out from child  = {0} ", count);
                         Console.WriteLine("Closed list count  = {0} ", closedlist.Count);
                         Console.WriteLine("Open list count  = {0} ", openlist.Count);

@@ -20,6 +20,10 @@ namespace ConsoleApp1
         }
         public BFSNode()
         {}
+        public BFSNode(BFSNode p)
+        {
+            this.Parent = p;
+        }
 
         public void GetAdjecents(int size)
         {
@@ -36,8 +40,10 @@ namespace ConsoleApp1
                     child.X = index.Item1;
                     child.Y = index.Item2;
                     child.Parent = this;
-                    this.Adjecents.Add(child);
-                    
+                    if (!(this.Parent != null && this.Parent.X == child.X && this.Parent.Y == child.Y))
+                    {
+                        this.Adjecents.Add(child);
+                    }
                 }
             }
         }
@@ -50,10 +56,7 @@ namespace ConsoleApp1
             while(openlist.Count > 0 )
             {
                 BFSNode current = openlist[0];
-                closedlist.Add(current);
-                openlist.RemoveAt(0);
                 current.GetAdjecents(size);
-
                 foreach (var child in current.Adjecents)
                 {
                     if (Checkboard(child.board, goalboard, size))
@@ -61,6 +64,8 @@ namespace ConsoleApp1
                         count++;
                         Console.WriteLine("Found Goal ");
                         Console.WriteLine("out from child  = {0} ", count);
+                        Console.WriteLine("Closed list count  = {0} ", closedlist.Count);
+                        Console.WriteLine("Open list count  = {0} ", openlist.Count);
                         return child;
                     }
                     if (!openlist.Contains(child) && !closedlist.Contains(child)) 
@@ -70,6 +75,9 @@ namespace ConsoleApp1
                         count++;
                     }
                 }
+                openlist.RemoveAt(0);
+                closedlist.Add(current);
+
             }
             return null;
         }

@@ -41,7 +41,7 @@ namespace ConsoleApp1
             this.value = value;
         }
 
-        public void CalcH(int choice,int size,int [,]goal)
+        public void CalcH(int choice,int size,int [,]goal) //O(1)
         {
             int count = 0;
             switch (choice)
@@ -49,38 +49,89 @@ namespace ConsoleApp1
                 case 0: /// Manhatten distance calculation
                     int Col = 0;
                     int Row = 0;
-                    for (int i = 0; i < size; i++)
+                    if (this.Parent == null)
                     {
-                        for (int j = 0; j < size; j++)
+                        for (int i = 0; i < size; i++)
                         {
-                            if (this.board[i, j] == 0) continue;
-                            else if (this.board[i, j] != ((i * size + j) + 1))
+                            for (int j = 0; j < size; j++)
                             {
-                                Col = ((this.board[i, j] - 1) % size);
-                                Row = (this.board[i, j] - 1) / size;
-                                count += Math.Abs(Row - i) + Math.Abs(Col - j);
+                                if (this.board[i, j] == 0) continue;
+                                else if (this.board[i, j] != ((i * size + j) + 1))
+                                {
+                                    Col = ((this.board[i, j] - 1) % size);
+                                    Row = (this.board[i, j] - 1) / size;
+                                    count += Math.Abs(Row - i) + Math.Abs(Col - j);
+                                }
                             }
                         }
+                        this.H = Convert.ToUInt16(count);
+                        //Console.WriteLine("manhattan with N Square {0}", count);
+                        break;
                     }
-                    this.H = Convert.ToUInt16(count);
+                    int man = this.Parent.H;
+                    Col = (this.value - 1) % size;
+                    Row = (this.value - 1) / size;
+                    if (this.board[this.X, this.Y] == ((this.X * size + this.Y) + 1))
+                    {
+                        man++;
+                    }
+                    else
+                    {
+                        man -= Math.Abs(Row - this.X) + Math.Abs(Col - this.Y);
+                        man += Math.Abs(Row - this.Parent.X) + Math.Abs(Col - this.Parent.Y);
+                    }
+                    //Console.WriteLine("manhattan with O(1) {0}", man);
+                    this.H = Convert.ToUInt16(man);
                     break;
 
-                case 1:/// Hamming distance calculation
-                    for (int i = 0; i < size; i++)
-                    {
-                        for (int j = 0; j < size; j++)
+                case 1:/// Hamming distance calculation O(1)
+                    
+                    //if (this.Parent == null)
+                    //{
+                        for (int i = 0; i < size; i++)
                         {
-                            if (this.board[i, j] == 0) continue;
-                            if (this.board[i, j] != goal[i, j]) count++;
+                            for (int j = 0; j < size; j++)
+                            {
+                                if (this.board[i, j] == 0) continue;
+                                if (this.board[i, j] != goal[i, j]) count++;
 
+                            }
                         }
+                        this.H = Convert.ToUInt16(count);
+                        break;
+                    //}
+                    //int ham = this.Parent.H;
+
+                    //if (this.value == goal[this.X, this.Y])
+                    //{
+                    //    ham--;
+                    //    Console.WriteLine("minus minus {0}", ham);
+                    //    if (this.Parent.value == goal[this.X, this.Y])
+                    //    {
+                    //        ham++;
+                    //        Console.WriteLine("plus plus {0}", ham);
+                    //    }
+                    //}
+                    /*
+                    if(this.Parent.board[this.Parent.X,this.Parent.Y] == goal[this.X, this.Y])
+                    {
+                        ham++;
+                        Console.WriteLine("plus plus {0}",ham);
                     }
-                    this.H = Convert.ToUInt16(count);
+                    */
+                    /*
+                    if(this.Parent.value != goal[this.X,this.Y])
+                    {
+                        ham++;
+                    }
+                    */
+                    //this.H = Convert.ToUInt16(ham);
                     break;
             }
             
         }
-        public void GetAdjecents(int size ,PriorityQ Astarlist,int heuristic,int [,]goal  )
+
+        public void GetAdjecents(int size ,PriorityQ Astarlist,int heuristic,int [,]goal) //O(Log V)
         {
 
             for (UInt16 i = 0; i < 4; i++)
@@ -88,7 +139,7 @@ namespace ConsoleApp1
                 // check for availabilty of move 
                 if (IsValid(this.X, this.Y, i, size))
                 {
-                    Tuple<int, int> index = Move(this.X, this.Y, i);
+                    Tuple<int, int> index = Move(this.X, this.Y, i); //O(1)
                     Node child = new Node
                     {
                         value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
@@ -101,10 +152,10 @@ namespace ConsoleApp1
                     if (!(this.Parent != null && this.Parent.X == child.X && this.Parent.Y == child.Y))
                     {
                         child.direction = i;
-                        this.Adjecants.Add(child);
+                        this.Adjecants.Add(child); //O(1)
                     }
                     //copying parent board 
-                    Array.Copy(this.board, child.board, size * size);
+                    Array.Copy(this.board, child.board, size * size); //O(N Square)
                     child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
                     child.level = Convert.ToUInt16(this.level + 1);
                     /*
@@ -122,43 +173,46 @@ namespace ConsoleApp1
 
             foreach (var neighbour in this.Adjecants)
             {
-                neighbour.G = Convert.ToUInt16(this.G + 1);
+                neighbour.G = Convert.ToUInt16(this.G + 1);//O(1)
                 // 0 Manhatten distance , 1 Hamming distance 
-                neighbour.CalcH(heuristic, size,goal);
+                neighbour.CalcH(heuristic, size,goal);//O(1)
                 neighbour.F = Convert.ToUInt16(neighbour.G + neighbour.H);
                 neighbour.Parent = this;
-                Astarlist.enqueue(neighbour);
+
+                Astarlist.enqueue(neighbour);//O(Log V)
             }
         }
-        public Node Astar(Node startnode,int [,]board,ref int size,int[,]goal,int heuristic ,ref bool ReachedGoal)
+
+        public Node Astar(Node startnode,int [,]board,ref int size,int[,]goal,int heuristic ,ref bool ReachedGoal)//O(E Log V)
         {
             PriorityQ Astarlist = new PriorityQ();
             Console.WriteLine("Start node at x,y " + startnode.X + " " + startnode.Y);
             startnode.board = board;
             startnode.G = 0;
-            startnode.CalcH(heuristic, size, goal);
+            startnode.CalcH(heuristic, size, goal); //O(1)
             startnode.F = Convert.ToUInt16(startnode.G + startnode.H);
             startnode.level = 0;
             startnode.Parent = null;
-            Astarlist.enqueue(startnode);
-            while (!Astarlist.empty())
+            Astarlist.enqueue(startnode);//O(Log V)
+
+            while (!Astarlist.empty()) // iterations (max E)  * Complexity body (Log V)
             {
                 Node temp = new Node();
-                temp = Astarlist.dequeue();
+                temp = Astarlist.dequeue();//O(Log V)
                 //if the heuristic value to the peek node is 0 then we reached our goal 
-               
-
                 if (temp.H == 0)
                 {
                     ReachedGoal = true;
                     Console.WriteLine("Found the goal ");
                     return temp;
                 }
-                temp.GetAdjecents(size, Astarlist, heuristic, goal);
+                //calculate each neighbour and add it to priorityqueue 
+                temp.GetAdjecents(size, Astarlist, heuristic, goal);//O(Log V)
             }
             return null;
         }
-        private static Tuple<int, int> Move(int x, int y, int i)
+
+        private static Tuple<int, int> Move(int x, int y, int i) //O(1)
         {
             switch (i)
             {
@@ -175,7 +229,7 @@ namespace ConsoleApp1
             }
         }
 
-        private static bool IsValid(int x, int y, int i, int size)
+        private static bool IsValid(int x, int y, int i, int size)//O(1)
         {
             switch (i)
             {
@@ -204,7 +258,7 @@ namespace ConsoleApp1
             }
         }
 
-        public void Swap(ref int x, ref int y)
+        public void Swap(ref int x, ref int y) //O(1)
         {
             int t = x;
             x = y;

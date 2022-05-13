@@ -105,25 +105,32 @@ namespace ConsoleApp1
                 ch = int.Parse(Console.ReadLine());
                 if (ch == 0) 
                 {
-                    /*
-                    Console.WriteLine("What heuristic function do you want to use ?? [0]Manhattan  OR   [1]Hamming  ");
-                    heuristic = int.Parse(Console.ReadLine());
+                    
+                    Console.WriteLine("What heuristic function do you want to use ?? [0]Manhattan & hamming  OR   [1]Manhattan only?  ");
+                    int heuristic = int.Parse(Console.ReadLine());
                     if(heuristic != 1 && heuristic != 0)
                     {
                         Console.WriteLine("Invalid input");
                         return;
                     }
-                    */
-                    Console.WriteLine("Code will run on [0]Manhattan  then   [1]Hamming  ");
+                    if(heuristic == 0 )
+                        Console.WriteLine("Code will run on [0]Manhattan  then   [1]Hamming  ");
+                    else
+                        Console.WriteLine("Code will run on **Only Manhattan** ");
                     for (int k = 0; k < 2; k++) 
                     {
+                        if (k == 0)
+                            Console.WriteLine("[0]Manhattan     ");
+                        else
+                            Console.WriteLine("[1]Hamming       ");
+                        if (heuristic == 1 && k == 1) break;
                         Stopwatch stopwatch = new Stopwatch();
                         bool ReachedGoal = false;
                         // Begin timing
                         stopwatch.Start();
                         System.Threading.Thread.Sleep(500);
                         GC.Collect();
-                        Node temp = startnode.Astar(startnode, board, ref size, goal, k, ref ReachedGoal);
+                        Node temp = startnode.Astar(startnode, board, ref size, goal, k, ref ReachedGoal);//O(E Log V)
                         stopwatch.Stop();
                         if (!ReachedGoal)
                         {
@@ -218,7 +225,7 @@ namespace ConsoleApp1
             Console.ReadKey();
         }
         
-        static int InversionCount(int N, string[] puzzle)
+        static int InversionCount(int N, string[] puzzle)// O[(s)(s)] = O(S Squared)
         {
             int cnt = 0;
             for (int i = 0; i < N * N - 1; i++)
@@ -240,7 +247,7 @@ namespace ConsoleApp1
             return cnt;
         }
 
-        static int Blankposition(Dictionary<int, List<string>> puzzle)
+        static int Blankposition(Dictionary<int, List<string>> puzzle)//O(N Squared)
         {
             //string blank = "0";
 
@@ -256,11 +263,12 @@ namespace ConsoleApp1
             }
             return 0;
         }
-
+        //O(N Squared)O[(s)(s)] = O(S Squared)
         static bool CheckSolvability(int N, Dictionary<int, List<string>> puzzle, string[] temp_puzzle)
+
         {
-            int cnt = InversionCount(N, temp_puzzle);
-            int row_pos = Blankposition(puzzle);
+            int cnt = InversionCount(N, temp_puzzle);// O[(s)(s)] = O(S Squared)
+            int row_pos = Blankposition(puzzle);//O(N Squared)
 
             if (N % 2 == 0)
             {
@@ -281,6 +289,7 @@ namespace ConsoleApp1
             return false;
         }
         public static int step = 0;
+
         public static bool PrintpathBFS(BFSNode end, int size)
         {
             if (end == null) return false;
@@ -299,14 +308,15 @@ namespace ConsoleApp1
             Console.WriteLine();
             return true;
         }
-        public static bool Printpath(Node end,int size,int C)
+
+        public static bool Printpath(Node end,int size,int C)//O(S)
         {
             //base case of the recursion 
-            if (end == null)
+            if (end == null) //O(1)
             {
                 return false;
             }
-            Printpath(end.Parent,size,C);
+            Printpath(end.Parent,size,C);// firstnode -> parent null 
             if (C == 0 ) 
             {
                 if (end.level == 0) end.direction = 4;
@@ -330,7 +340,7 @@ namespace ConsoleApp1
             }
             else if(C== 1)
             {
-                Console.WriteLine("Step # {0} ", end.level);
+                Console.WriteLine("Step # {0} ", end.level);//O(S)
                 for (int i = 0; i < size; i++)
                 {
                     for (int j = 0; j < size; j++)

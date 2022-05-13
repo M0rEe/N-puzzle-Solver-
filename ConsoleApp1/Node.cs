@@ -7,14 +7,14 @@ namespace ConsoleApp1
     class Node 
     {
         public Node Parent;
-        public int G,F,H;
+        public UInt16 G,F,H;
         public List<Node> Adjecants;
-        public int X, Y;
-        public int value;
+        public UInt16 X, Y;
+        public UInt16 value;
         public int [,]board;
-        public int level;
-        public int direction;
-        public Node(int x, int y, int value)
+        public UInt16 level;
+        public UInt16 direction;
+        public Node(UInt16 x, UInt16 y, UInt16 value)
         {
             this.value = value;
             this.X = x;
@@ -29,7 +29,7 @@ namespace ConsoleApp1
         {
         }
 
-        public Node(Node parent, int g, int f, int h, List<Node> adjecants, int x, int y, int value)
+        public Node(Node parent, UInt16 g, UInt16 f, UInt16 h, List<Node> adjecants, UInt16 x, UInt16 y, UInt16 value)
         {
             Parent = parent;
             G = g;
@@ -62,7 +62,7 @@ namespace ConsoleApp1
                             }
                         }
                     }
-                    this.H = count;
+                    this.H = Convert.ToUInt16(count);
                     break;
 
                 case 1:/// Hamming distance calculation
@@ -71,12 +71,11 @@ namespace ConsoleApp1
                         for (int j = 0; j < size; j++)
                         {
                             if (this.board[i, j] == 0) continue;
-                            if (this.board[i, j] != goal[i,j]) count++;
-                            
+                            if (this.board[i, j] != goal[i, j]) count++;
+
                         }
                     }
-
-                    this.H = count;
+                    this.H = Convert.ToUInt16(count);
                     break;
             }
             
@@ -84,7 +83,7 @@ namespace ConsoleApp1
         public void GetAdjecents(int size ,PriorityQ Astarlist,int heuristic,int [,]goal  )
         {
 
-            for (int i = 0; i < 4; i++)
+            for (UInt16 i = 0; i < 4; i++)
             {
                 // check for availabilty of move 
                 if (IsValid(this.X, this.Y, i, size))
@@ -92,28 +91,28 @@ namespace ConsoleApp1
                     Tuple<int, int> index = Move(this.X, this.Y, i);
                     Node child = new Node
                     {
-                        value = this.board[index.Item1, index.Item2],
+                        value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
                         Adjecants = new List<Node>(),
                         board = new int[size, size]
                     };
+                    child.X = Convert.ToUInt16(index.Item1);
+                    child.Y = Convert.ToUInt16(index.Item2);
+                    child.Parent = this;
+                    if (!(this.Parent != null && this.Parent.X == child.X && this.Parent.Y == child.Y))
+                    {
+                        child.direction = i;
+                        this.Adjecants.Add(child);
+                    }
                     //copying parent board 
                     Array.Copy(this.board, child.board, size * size);
                     child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
-                    child.X = index.Item1;
-                    child.Y = index.Item2;
-                    child.level = this.level + 1;
-                    child.Parent = this;
+                    child.level = Convert.ToUInt16(this.level + 1);
                     /*
                      *  condition to handle not to add the same node from path before
                      *  (x+1 , y) down , (x-1 , y) up ,
                      *  (x , y+1) right  , (x ,y-1) left
                      *   down 0 , up 1 ,right 2 , left 3
                      */
-                    if (!(this.Parent != null && this.Parent.X == child.X && this.Parent.Y == child.Y))
-                    {
-                        child.direction = i;
-                        this.Adjecants.Add(child);
-                    }
                 }
                 else
                 {
@@ -123,30 +122,32 @@ namespace ConsoleApp1
 
             foreach (var neighbour in this.Adjecants)
             {
-                neighbour.G = this.G + 1;
+                neighbour.G = Convert.ToUInt16(this.G + 1);
                 // 0 Manhatten distance , 1 Hamming distance 
                 neighbour.CalcH(heuristic, size,goal);
-                neighbour.F = neighbour.G + neighbour.H;
+                neighbour.F = Convert.ToUInt16(neighbour.G + neighbour.H);
                 neighbour.Parent = this;
                 Astarlist.enqueue(neighbour);
             }
         }
-        public Node Astar(Node startnode,int [,]board,int size,int[,]goal,int heuristic ,ref bool ReachedGoal)
+        public Node Astar(Node startnode,int [,]board,ref int size,int[,]goal,int heuristic ,ref bool ReachedGoal)
         {
             PriorityQ Astarlist = new PriorityQ();
             Console.WriteLine("Start node at x,y " + startnode.X + " " + startnode.Y);
             startnode.board = board;
             startnode.G = 0;
             startnode.CalcH(heuristic, size, goal);
-            startnode.F = startnode.G + startnode.H;
+            startnode.F = Convert.ToUInt16(startnode.G + startnode.H);
             startnode.level = 0;
             startnode.Parent = null;
             Astarlist.enqueue(startnode);
-            Node temp = new Node();
             while (!Astarlist.empty())
             {
+                Node temp = new Node();
                 temp = Astarlist.dequeue();
                 //if the heuristic value to the peek node is 0 then we reached our goal 
+               
+
                 if (temp.H == 0)
                 {
                     ReachedGoal = true;
@@ -154,10 +155,6 @@ namespace ConsoleApp1
                     return temp;
                 }
                 temp.GetAdjecents(size, Astarlist, heuristic, goal);
-
-                temp.Adjecants = null;
-                temp = null;
-
             }
             return null;
         }

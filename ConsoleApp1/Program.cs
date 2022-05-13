@@ -22,7 +22,7 @@ namespace ConsoleApp1
             size = int.Parse(line);
             int[,] goal = new int[size, size];
             line = sr.ReadLine();
-            
+            int ch = -1;
             Dictionary<int, List<string>> Row = new Dictionary<int, List<string>>();
             int indexi=0 , indexj=0;
             for (int i = 0; i < size; )
@@ -63,16 +63,17 @@ namespace ConsoleApp1
             }
 
             int[,] board  =new int[size,size];
-            int heuristic = 1;
+            //int heuristic = 1;
             Node[,] element = new Node [size,size];
             Node startnode = new Node();
-            Node End = new Node(); 
+            Node End = new Node();
+            BFSNode bfsend = new BFSNode();
             for (int i = 0; i < size; i++)
             {
                 foreach (var el in Row[i])
                 {
                     int j = Row[i].IndexOf(el);
-                    element[i, j] = new Node(i,j,int.Parse(el));
+                    element[i, j] = new Node(Convert.ToUInt16(i), Convert.ToUInt16(j),UInt16.Parse(el));
                     board[i, j] = int.Parse(el);
                     if (el.Equals("0"))
                     {
@@ -99,10 +100,12 @@ namespace ConsoleApp1
             {
                 Console.Write(">>>");
                 Console.WriteLine("Solvable");
+                Console.WriteLine("Time of solvability : {0}", valid.Elapsed);
                 Console.WriteLine("What algorithim do you want to be used??   [0]A*   OR  [1]BFS");
-                int ch = int.Parse(Console.ReadLine());
+                ch = int.Parse(Console.ReadLine());
                 if (ch == 0) 
                 {
+                    /*
                     Console.WriteLine("What heuristic function do you want to use ?? [0]Manhattan  OR   [1]Hamming  ");
                     heuristic = int.Parse(Console.ReadLine());
                     if(heuristic != 1 && heuristic != 0)
@@ -110,25 +113,31 @@ namespace ConsoleApp1
                         Console.WriteLine("Invalid input");
                         return;
                     }
-                    Stopwatch stopwatch = new Stopwatch();
-
-                    bool ReachedGoal = false;
-                    // Begin timing
-                    stopwatch.Start();
-                    System.Threading.Thread.Sleep(500);
-                    Node temp = startnode.Astar(startnode, board, size, goal, heuristic, ref ReachedGoal);
-                    stopwatch.Stop();
-                    if (!ReachedGoal)
+                    */
+                    Console.WriteLine("Code will run on [0]Manhattan  then   [1]Hamming  ");
+                    for (int k = 0; k < 2; k++) 
                     {
-                        Console.WriteLine("out of the while ");
-                    }
-                    else
-                    {
-                        Console.Write("# of movements ");
-                        Console.Write(temp.level);
-                        End = temp;
-                        Console.WriteLine();
-                        Console.WriteLine("Time : {0}", stopwatch.Elapsed);
+                        Stopwatch stopwatch = new Stopwatch();
+                        bool ReachedGoal = false;
+                        // Begin timing
+                        stopwatch.Start();
+                        System.Threading.Thread.Sleep(500);
+                        GC.Collect();
+                        Node temp = startnode.Astar(startnode, board, ref size, goal, k, ref ReachedGoal);
+                        stopwatch.Stop();
+                        if (!ReachedGoal)
+                        {
+                            Console.WriteLine("out of the while ");
+                        }
+                        else
+                        {
+                            Console.Write("# of movements ");
+                            Console.Write(temp.level);
+                            End = temp;
+                            Console.WriteLine();
+                            Console.WriteLine("Time : {0}", stopwatch.Elapsed);
+                        }
+                        Console.WriteLine("############################################################");
                     }
                 }else if (ch == 1)
                 {
@@ -153,10 +162,18 @@ namespace ConsoleApp1
                             }
                         }
                     }
+                    Stopwatch bfswatch = new Stopwatch();
+
+                    bfswatch.Start();
+                    System.Threading.Thread.Sleep(500);
                     BFSNode final = firstnode.BFS(firstnode,size,goal);
+                    bfsend = final;
+                    bfswatch.Stop();
                     if (final != null)
                     {
+                        
                         Console.WriteLine("Found the goal ");
+                        Console.WriteLine("Time of solvability : {0}", bfswatch.Elapsed);
                         Console.WriteLine("board ");
                         for (int i =0;i< size;i++)
                         {
@@ -178,16 +195,24 @@ namespace ConsoleApp1
                 Console.Write(">>>");
                 Console.WriteLine("NOT Solvable");
             }
-            Console.WriteLine("Time of solvability : {0}", valid.Elapsed);
             Console.WriteLine("Do you want to print all steps ??   [Y]   OR   [N]");
             string choice = Console.ReadLine();
-            if (choice.ToLower().Equals("y"))
+            if (ch == 0)
             {
-                Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
-                int C = int.Parse(Console.ReadLine());
-                if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
-                else Printpath(End,size,C);
+
+                if (choice.ToLower().Equals("y"))
+                {
+                    Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
+                    int C = int.Parse(Console.ReadLine());
+                    if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
+                    else Printpath(End,size,C);
+                    Console.WriteLine();
+                }
+            }else if (ch == 1)
+            {
+                PrintpathBFS(bfsend, size);
                 Console.WriteLine();
+                
             }
             Console.WriteLine("Executed Successfully .... !!");
             Console.ReadKey();
@@ -255,7 +280,25 @@ namespace ConsoleApp1
             }
             return false;
         }
-
+        public static int step = 0;
+        public static bool PrintpathBFS(BFSNode end, int size)
+        {
+            if (end == null) return false;
+            PrintpathBFS(end.Parent, size);
+            Console.WriteLine("Step # {0} ", step);
+            step++;
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    Console.Write(end.board[i, j]);
+                    Console.Write(' ');
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+            return true;
+        }
         public static bool Printpath(Node end,int size,int C)
         {
             //base case of the recursion 

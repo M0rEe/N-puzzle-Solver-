@@ -57,6 +57,7 @@ namespace ConsoleApp1
             {
                 BFSNode current = openlist[0];
                 current.GetAdjecents(size);
+                Console.WriteLine(current.Adjecents.Count);
                 foreach (var child in current.Adjecents)
                 {
                     if (Checkboard(child.board, goalboard, size))

@@ -134,6 +134,9 @@ namespace ConsoleApp1
                     }
                 }else if (ch == 1)
                 {
+                    Stopwatch stopwatch = new Stopwatch();
+                    // Begin timing
+                    stopwatch.Start();
                     BFSNode[,] graph = new BFSNode[size, size];
                     BFSNode firstnode = new BFSNode();
                     for (int i = 0; i < size; i++)
@@ -169,10 +172,14 @@ namespace ConsoleApp1
                             Console.WriteLine();
                         }
                     }
+                    
                     else
                     {
                         Console.WriteLine("Returned null");
                     }
+                    stopwatch.Stop();
+                    Console.WriteLine();
+                    Console.WriteLine("Time : {0}", stopwatch.Elapsed);
                 }
             }
             else

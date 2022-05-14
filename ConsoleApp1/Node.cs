@@ -85,7 +85,7 @@ namespace ConsoleApp1
                     break;
 
                 case 1:/// Hamming distance calculation O(1)
-                    
+
                     //if (this.Parent == null)
                     //{
                         for (int i = 0; i < size; i++)
@@ -106,27 +106,23 @@ namespace ConsoleApp1
                     //{
                     //    ham--;
                     //    Console.WriteLine("minus minus {0}", ham);
-                    //    if (this.Parent.value == goal[this.X, this.Y])
-                    //    {
-                    //        ham++;
-                    //        Console.WriteLine("plus plus {0}", ham);
-                    //    }
+
                     //}
-                    /*
-                    if(this.Parent.board[this.Parent.X,this.Parent.Y] == goal[this.X, this.Y])
-                    {
-                        ham++;
-                        Console.WriteLine("plus plus {0}",ham);
-                    }
-                    */
-                    /*
-                    if(this.Parent.value != goal[this.X,this.Y])
-                    {
-                        ham++;
-                    }
-                    */
+
+
+                    //if (this.Parent.value != goal[this.Parent.X, this.Parent.Y])
+                    //{
+                    //    ham++;
+                    //    Console.WriteLine("plus plus {0}", ham);
+                    //}
+                    //else
+                    //{
+                    //    ham--;
+                    //}
+                    
+                    
                     //this.H = Convert.ToUInt16(ham);
-                    break;
+                    //break;
             }
             
         }
@@ -179,7 +175,7 @@ namespace ConsoleApp1
                 neighbour.F = Convert.ToUInt16(neighbour.G + neighbour.H);
                 neighbour.Parent = this;
 
-                Astarlist.enqueue(neighbour);//O(Log V)
+                Astarlist.Enqueue(neighbour);//O(Log V)
             }
         }
 
@@ -193,12 +189,12 @@ namespace ConsoleApp1
             startnode.F = Convert.ToUInt16(startnode.G + startnode.H);
             startnode.level = 0;
             startnode.Parent = null;
-            Astarlist.enqueue(startnode);//O(Log V)
+            Astarlist.Enqueue(startnode);//O(Log V)
 
-            while (!Astarlist.empty()) // iterations (max E)  * Complexity body (Log V)
+            while (!Astarlist.Empty()) // iterations (max E)  * Complexity body (Log V)
             {
                 Node temp = new Node();
-                temp = Astarlist.dequeue();//O(Log V)
+                temp = Astarlist.Dequeue();//O(Log V)
                 //if the heuristic value to the peek node is 0 then we reached our goal 
                 if (temp.H == 0)
                 {

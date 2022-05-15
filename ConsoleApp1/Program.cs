@@ -128,7 +128,7 @@ namespace ConsoleApp1
                         stopwatch.Start();
                         System.Threading.Thread.Sleep(500);
                         GC.Collect();
-                        Node temp = startnode.Astar(startnode, board, ref size, goal, k, ref ReachedGoal);//O(E Log V)
+                        Node temp = startnode.Astar(startnode, board, ref size, ref goal, k, ref ReachedGoal);//O(E Log V)
                         stopwatch.Stop();
                         if (!ReachedGoal)
                         {

@@ -9,4 +9,4 @@ in BFS as its UN-informed search so its discovering every child from current sta
 you can refer to pseudocode for A* and BFS on Wikipedia
 
 this is gif explaning how the algorithm works for solving input puzzle
-![GIF](https://user-images.githubusercontent.com/62582432/168453126-cc00ea43-6736-47bd-8a36-d7cf9c8c90d4.gif)
+![Stepsgif](https://user-images.githubusercontent.com/62582432/168497324-64dab066-62d7-4055-a650-19b366e2f255.gif)

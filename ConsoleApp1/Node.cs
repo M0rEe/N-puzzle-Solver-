@@ -136,31 +136,7 @@ namespace ConsoleApp1
                 if (IsValid(this.X, this.Y, i, size))
                 {
                     Tuple<int, int> index = Move(this.X, this.Y, i); //O(1)
-                    if (!(this.Parent != null && this.Parent.X == index.Item1 && this.Parent.Y == index.Item2))
-                    {
-                        Node child = new Node
-                        {
-                            value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
-                            Adjecants = new List<Node>(),
-                            board = new int[size, size]
-                        };
-                        child.X = Convert.ToUInt16(index.Item1);
-                        child.Y = Convert.ToUInt16(index.Item2);
-                        child.Parent = this;
-                        //copying parent board 
-                        Array.Copy(this.board, child.board, size * size); //O(N Square)
-                        child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
-                        child.level = Convert.ToUInt16(this.level + 1);
-                        child.direction = i;
-                        this.Adjecants.Add(child); //O(1)
-                    /*
-                     *  condition to handle not to add the same node from path before
-                     *  (x+1 , y) down , (x-1 , y) up ,
-                     *  (x , y+1) right  , (x ,y-1) left
-                     *   down 0 , up 1 ,right 2 , left 3
-                     */
-                    }
-                    else if (this.Parent == null)
+                    if (this.Parent != null)
                     {
                         if (!(this.Parent.X == index.Item1 && this.Parent.Y == index.Item2))
                         {
@@ -173,18 +149,41 @@ namespace ConsoleApp1
                             child.X = Convert.ToUInt16(index.Item1);
                             child.Y = Convert.ToUInt16(index.Item2);
                             child.Parent = this;
+                            child.direction = i;
                             //copying parent board 
                             Array.Copy(this.board, child.board, size * size); //O(N Square)
                             child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
                             child.level = Convert.ToUInt16(this.level + 1);
-                            child.direction = i;
                             this.Adjecants.Add(child); //O(1)
+                            /*
+                             *  condition to handle not to add the same node from path before
+                             *  (x+1 , y) down , (x-1 , y) up ,
+                             *  (x , y+1) right  , (x ,y-1) left
+                             *   down 0 , up 1 ,right 2 , left 3
+                             */
                         }
                     }
+                    else
+                    {
+                        Node child = new Node
+                        {
+                            value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
+                            Adjecants = new List<Node>(),
+                            board = new int[size, size]
+                        };
+                        child.X = Convert.ToUInt16(index.Item1);
+                        child.Y = Convert.ToUInt16(index.Item2);
+                        child.Parent = this;
+                        child.direction = i;
+                        //copying parent board 
+                        Array.Copy(this.board, child.board, size * size); //O(N Square)
+                        child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
+                        child.level = Convert.ToUInt16(this.level + 1);
+                        this.Adjecants.Add(child); //O(1)
+                    }
                 }
-                
-            }
 
+            }
             foreach (var neighbour in this.Adjecants)
             {
                 neighbour.G = Convert.ToUInt16(this.G + 1);//O(1)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -81,7 +82,6 @@ namespace GUI
                     lbl.SetBounds((j * panel1.Size.Width / size), (i * panel1.Size.Height / size),
                         panel1.Size.Width / size, panel1.Size.Height / size);
                     lbl.Font = new Font("Calibri", 22);
-                    lbl.Padding = new Padding(5);
                     lbl.TextAlign = ContentAlignment.MiddleCenter;
                     panel1.Controls.Add(lbl);
 
@@ -119,30 +119,31 @@ namespace GUI
                     }
                 }
             }
+            Stopwatch b = new Stopwatch();
+            b.Start();
             bool Sol = CheckSolvability(size, Row, temp_arr);
+            b.Stop();
             if (Sol)
             {
-                int heuristic = 1;
-
-                for (int k = 0; k < 2; k++)
+                label4.Text = "Time Of Solavability : \n" + b.Elapsed.ToString(); 
+                bool ReachedGoal = false;
+                // Begin timing
+                GC.Collect();
+                Stopwatch a = new Stopwatch();
+                a.Start();
+                Node temp = startnode.Astar(startnode, board, ref size, goal, 0, ref ReachedGoal);//O(E Log V)
+                a.Stop();
+                if (!ReachedGoal)
                 {
-
-                    if (heuristic == 1 && k == 1) break;
-
-                    bool ReachedGoal = false;
-                    // Begin timing
-                    GC.Collect();
-                    Node temp = startnode.Astar(startnode, board, ref size, goal, k, ref ReachedGoal);//O(E Log V)
-                    if (!ReachedGoal)
-                    {
-                        MessageBox.Show("OUT OF WHILE LOOP!!!");
-                    }
-                    else
-                    {
-                        label1.Text = "Number of Moves \n" + temp.level.ToString();
-                        End = temp;
-                    }
+                    MessageBox.Show("OUT OF WHILE LOOP!!!");
                 }
+                else
+                {
+                    label1.Text = "Number Of Moves : \n" + temp.level.ToString();
+                    label3.Text = "TIme To Solve: \n" + a.Elapsed.ToString();
+                    End = temp;
+                }
+                
             }
             else
             {

@@ -23,7 +23,7 @@ namespace ConsoleApp1
             this.H = 0;
             this.F = 0;
             this.Parent = null;
-            this.Adjecants = new List<Node>();
+            this.Adjecants = new List<Node>(4);
         }
         public Node()
         {
@@ -127,7 +127,7 @@ namespace ConsoleApp1
             
         }
 
-        public void GetAdjecents(int size ,PriorityQ Astarlist,int heuristic,int [,]goal) //O(Log V)
+        public void GetAdjecents(ref int size , ref FibonacciHeap.FibonacciHeap<Node,UInt16>  heap,int heuristic,ref int [,]goal) //O(Log V)
         {
 
             for (UInt16 i = 0; i < 4; i++)
@@ -136,52 +136,75 @@ namespace ConsoleApp1
                 if (IsValid(this.X, this.Y, i, size))
                 {
                     Tuple<int, int> index = Move(this.X, this.Y, i); //O(1)
-                    Node child = new Node
+                    if(this.Parent != null)
                     {
-                        value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
-                        Adjecants = new List<Node>(),
-                        board = new int[size, size]
-                    };
-                    child.X = Convert.ToUInt16(index.Item1);
-                    child.Y = Convert.ToUInt16(index.Item2);
-                    child.Parent = this;
-                    if (!(this.Parent != null && this.Parent.X == child.X && this.Parent.Y == child.Y))
+                        if (!( this.Parent.X == index.Item1 && this.Parent.Y == index.Item2))
+                        {
+                             Node child = new Node
+                            {
+                                value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
+                                Adjecants = new List<Node>(),
+                                board = new int[size, size]
+                            };
+                            child.X = Convert.ToUInt16(index.Item1);
+                            child.Y = Convert.ToUInt16(index.Item2);
+                            child.Parent = this;
+                            child.direction = i;
+                            //copying parent board 
+                            Array.Copy(this.board, child.board, size * size); //O(N Square)
+                            child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
+                            child.level = Convert.ToUInt16(this.level + 1);
+                            this.Adjecants.Add(child); //O(1)
+                            /*
+                             *  condition to handle not to add the same node from path before
+                             *  (x+1 , y) down , (x-1 , y) up ,
+                             *  (x , y+1) right  , (x ,y-1) left
+                             *   down 0 , up 1 ,right 2 , left 3
+                             */
+                        }
+                    }
+                    else
                     {
+                        Node child = new Node
+                        {
+                            value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
+                            Adjecants = new List<Node>(),
+                            board = new int[size, size]
+                        };
+                        child.X = Convert.ToUInt16(index.Item1);
+                        child.Y = Convert.ToUInt16(index.Item2);
+                        child.Parent = this;
                         child.direction = i;
+                        //copying parent board 
+                        Array.Copy(this.board, child.board, size * size); //O(N Square)
+                        child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
+                        child.level = Convert.ToUInt16(this.level + 1);
                         this.Adjecants.Add(child); //O(1)
                     }
-                    //copying parent board 
-                    Array.Copy(this.board, child.board, size * size); //O(N Square)
-                    child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
-                    child.level = Convert.ToUInt16(this.level + 1);
-                    /*
-                     *  condition to handle not to add the same node from path before
-                     *  (x+1 , y) down , (x-1 , y) up ,
-                     *  (x , y+1) right  , (x ,y-1) left
-                     *   down 0 , up 1 ,right 2 , left 3
-                     */
                 }
-                else
-                {
-                    continue;
-                }
+               
             }
-
             foreach (var neighbour in this.Adjecants)
             {
+
                 neighbour.G = Convert.ToUInt16(this.G + 1);//O(1)
                 // 0 Manhatten distance , 1 Hamming distance 
                 neighbour.CalcH(heuristic, size,goal);//O(1)
                 neighbour.F = Convert.ToUInt16(neighbour.G + neighbour.H);
                 neighbour.Parent = this;
 
-                Astarlist.Enqueue(neighbour);//O(Log V)
+                var nodeToInsert = new FibonacciHeap.FibonacciHeapNode<Node, UInt16>(neighbour, neighbour.F);
+                
+                heap.Insert(nodeToInsert);//O(Log V)
             }
         }
 
         public Node Astar(Node startnode,int [,]board,ref int size,int[,]goal,int heuristic ,ref bool ReachedGoal)//O(E Log V)
         {
-            PriorityQ Astarlist = new PriorityQ();
+            //PriorityQ Astarlist = new PriorityQ();
+            //FibonacciHeap
+            var heap = new FibonacciHeap.FibonacciHeap<Node, UInt16>(0);
+
             Console.WriteLine("Start node at x,y " + startnode.X + " " + startnode.Y);
             startnode.board = board;
             startnode.G = 0;
@@ -189,21 +212,25 @@ namespace ConsoleApp1
             startnode.F = Convert.ToUInt16(startnode.G + startnode.H);
             startnode.level = 0;
             startnode.Parent = null;
-            Astarlist.Enqueue(startnode);//O(Log V)
 
-            while (!Astarlist.Empty()) // iterations (max E)  * Complexity body (Log V)
+            var nodeToInsert = new FibonacciHeap.FibonacciHeapNode< Node, UInt16>(startnode,startnode.F);
+            heap.Insert(nodeToInsert);//O(Log V)
+            Node temp;
+            while (!heap.IsEmpty()) // iterations (max E)  * Complexity body (Log V)
             {
-                Node temp = new Node();
-                temp = Astarlist.Dequeue();//O(Log V)
+                var ret  = heap.Min();//O(Log V)
+                heap.RemoveMin();
+                temp = ret.Data;
                 //if the heuristic value to the peek node is 0 then we reached our goal 
-                if (temp.H == 0)
+                if (temp.H == 0 )
                 {
                     ReachedGoal = true;
                     Console.WriteLine("Found the goal ");
                     return temp;
                 }
                 //calculate each neighbour and add it to priorityqueue 
-                temp.GetAdjecents(size, Astarlist, heuristic, goal);//O(Log V)
+                temp.GetAdjecents(ref size, ref heap, heuristic, ref goal);//O(Log V)
+                temp = null;
             }
             return null;
         }

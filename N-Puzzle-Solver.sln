@@ -5,6 +5,19 @@ VisualStudioVersion = 15.0.28307.1800
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "N-Puzzle-Solver", "ConsoleApp1\N-Puzzle-Solver.csproj", "{66F0BAE5-CF4A-4A83-9C3D-528C0FF6CC9D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{261BDAFA-9793-4CB7-B20A-97C311483E85}"
+	ProjectSection(SolutionItems) = preProject
+		GUI\App.config = GUI\App.config
+		GUI\Form1.cs = GUI\Form1.cs
+		GUI\Form1.Designer.cs = GUI\Form1.Designer.cs
+		GUI\Form1.resx = GUI\Form1.resx
+		GUI\GUI.csproj = GUI\GUI.csproj
+		GUI.sln = GUI.sln
+		GUI\Node.cs = GUI\Node.cs
+		GUI\PriorityQ.cs = GUI\PriorityQ.cs
+		GUI\Program.cs = GUI\Program.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

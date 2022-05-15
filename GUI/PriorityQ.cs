@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 
 
-namespace ConsoleApp1
+namespace GUI
 {
-    class PriorityQ 
+    public class PriorityQ
     {
 
         public Node[] Arr;
         int length = 0;
+
         public void Enqueue(Node x)//O(Log V)
         {
             length = length + 1;
@@ -45,7 +46,7 @@ namespace ConsoleApp1
         }
         public int Count() { return length; }
 
-       
+
         void Min_heap(int i, int N)//O(Log V)
         {
             // to get index of left child of Node at index i 
@@ -66,7 +67,7 @@ namespace ConsoleApp1
                 Min_heap(smallest, N);
             }
         }
-        
+
         void Swap(ref Node x, ref Node y)//1
         {
             Node t = x;

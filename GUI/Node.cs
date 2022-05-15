@@ -130,43 +130,61 @@ namespace GUI
         public void GetAdjecents(int size, PriorityQ Astarlist, int heuristic, int[,] goal) //O(Log V)
         {
 
+
             for (UInt16 i = 0; i < 4; i++)
             {
                 // check for availabilty of move 
                 if (IsValid(this.X, this.Y, i, size))
                 {
                     Tuple<int, int> index = Move(this.X, this.Y, i); //O(1)
-                    Node child = new Node
+                    if (this.Parent != null)
                     {
-                        value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
-                        Adjecants = new List<Node>(),
-                        board = new int[size, size]
-                    };
-                    child.X = Convert.ToUInt16(index.Item1);
-                    child.Y = Convert.ToUInt16(index.Item2);
-                    child.Parent = this;
-                    if (!(this.Parent != null && this.Parent.X == child.X && this.Parent.Y == child.Y))
+                        if (!(this.Parent.X == index.Item1 && this.Parent.Y == index.Item2))
+                        {
+                            Node child = new Node
+                            {
+                                value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
+                                Adjecants = new List<Node>(),
+                                board = new int[size, size]
+                            };
+                            child.X = Convert.ToUInt16(index.Item1);
+                            child.Y = Convert.ToUInt16(index.Item2);
+                            child.Parent = this;
+                            child.direction = i;
+                            //copying parent board 
+                            Array.Copy(this.board, child.board, size * size); //O(N Square)
+                            child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
+                            child.level = Convert.ToUInt16(this.level + 1);
+                            this.Adjecants.Add(child); //O(1)
+                            /*
+                             *  condition to handle not to add the same node from path before
+                             *  (x+1 , y) down , (x-1 , y) up ,
+                             *  (x , y+1) right  , (x ,y-1) left
+                             *   down 0 , up 1 ,right 2 , left 3
+                             */
+                        }
+                    }
+                    else
                     {
+                        Node child = new Node
+                        {
+                            value = Convert.ToUInt16(this.board[index.Item1, index.Item2]),
+                            Adjecants = new List<Node>(),
+                            board = new int[size, size]
+                        };
+                        child.X = Convert.ToUInt16(index.Item1);
+                        child.Y = Convert.ToUInt16(index.Item2);
+                        child.Parent = this;
                         child.direction = i;
+                        //copying parent board 
+                        Array.Copy(this.board, child.board, size * size); //O(N Square)
+                        child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
+                        child.level = Convert.ToUInt16(this.level + 1);
                         this.Adjecants.Add(child); //O(1)
                     }
-                    //copying parent board 
-                    Array.Copy(this.board, child.board, size * size); //O(N Square)
-                    child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
-                    child.level = Convert.ToUInt16(this.level + 1);
-                    /*
-                     *  condition to handle not to add the same node from path before
-                     *  (x+1 , y) down , (x-1 , y) up ,
-                     *  (x , y+1) right  , (x ,y-1) left
-                     *   down 0 , up 1 ,right 2 , left 3
-                     */
                 }
-                else
-                {
-                    continue;
-                }
-            }
 
+            }
             foreach (var neighbour in this.Adjecants)
             {
                 neighbour.G = Convert.ToUInt16(this.G + 1);//O(1)
@@ -190,10 +208,10 @@ namespace GUI
             startnode.level = 0;
             startnode.Parent = null;
             Astarlist.Enqueue(startnode);//O(Log V)
+            Node temp;
 
             while (!Astarlist.Empty()) // iterations (max E)  * Complexity body (Log V)
             {
-                Node temp = new Node();
                 temp = Astarlist.Dequeue();//O(Log V)
                 //if the heuristic value to the peek node is 0 then we reached our goal 
                 if (temp.H == 0)
@@ -204,6 +222,7 @@ namespace GUI
                 }
                 //calculate each neighbour and add it to priorityqueue 
                 temp.GetAdjecents(size, Astarlist, heuristic, goal);//O(Log V)
+                temp = null; 
             }
             return null;
         }

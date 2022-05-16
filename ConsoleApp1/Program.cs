@@ -17,7 +17,7 @@ namespace ConsoleApp1
             string line;
             TextReader origConsole = Console.In;
 
-            file = new FileStream("C:/Users/EGYPT/source/repos/N-puzzle-Solver-/Testcases/Sample/Sample Test/Solvable Puzzles/8 Puzzle (2).txt", FileMode.Open, FileAccess.Read);
+            file = new FileStream("C:/Users/EGYPT/source/repos/N-puzzle-Solver-/Testcases/Complete/Complete Test/V. Large test case/TEST.txt", FileMode.Open, FileAccess.Read);
 
             sr = new StreamReader(file);
             line = sr.ReadLine();

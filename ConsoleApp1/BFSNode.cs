@@ -25,24 +25,24 @@ namespace ConsoleApp1
             this.Parent = p;
         }
 
-        public void GetAdjecents(int size)
+        public void GetAdjecents(int size)//O(N²)
         {
             for (int i = 0; i < 4; i++)
             {
                 // check for availabilty of move 
-                if (IsValid(this.X, this.Y, i, size))
+                if (IsValid(this.X, this.Y, i, size))//O(1)
                 {
-                    Tuple<int, int> index = Move(this.X, this.Y, i);
-                    BFSNode child = new BFSNode(size, board[index.Item1, index.Item2], this.board);
+                    Tuple<int, int> index = Move(this.X, this.Y, i);//O(1)
+                    BFSNode child = new BFSNode(size, board[index.Item1, index.Item2], this.board);//O(1)
                     //copying parent board 
-                    Array.Copy(this.board, child.board, size * size);
+                    Array.Copy(this.board, child.board, size * size);//O(N²)
                     child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
                     child.X = index.Item1;
                     child.Y = index.Item2;
                     child.Parent = this;
                     if (!(this.Parent != null && this.Parent.X == child.X && this.Parent.Y == child.Y))
                     {
-                        this.Adjecents.Add(child);
+                        this.Adjecents.Add(child);//O(1)
                     }
                 }
             }
@@ -53,14 +53,13 @@ namespace ConsoleApp1
             List<BFSNode> openlist = new List<BFSNode>();
             List<BFSNode> closedlist = new List<BFSNode>();
             openlist.Add(start);
-            while(openlist.Count > 0 )
+            while(openlist.Count > 0)//# iterations E * Complexity of body O(N²) = //O(E*N²) E>N² ?? 
             {
                 BFSNode current = openlist[0];
-                current.GetAdjecents(size);
-               // Console.WriteLine(current.Adjecents.Count);
-                foreach (var child in current.Adjecents)
+                current.GetAdjecents(size);//O(N²)
+                foreach (var child in current.Adjecents)//O(1)
                 {
-                    if (Checkboard(child.board, goalboard, size))
+                    if (Checkboard(child.board, goalboard, size))//O(N²)
                     {
                         count++;
                         Console.WriteLine("Found Goal ");
@@ -70,10 +69,10 @@ namespace ConsoleApp1
                         Console.WriteLine("Open list count  = {0} ", openlist.Count);
                         return child;
                     }
-                    if (!openlist.Contains(child) && !closedlist.Contains(child)) 
+                    if (!openlist.Contains(child) && !closedlist.Contains(child)) //O(N)
                     {
                         child.Parent = current;
-                        openlist.Add(child);
+                        openlist.Add(child);//O(1)
                         count++;
                     }
                 }
@@ -83,7 +82,7 @@ namespace ConsoleApp1
             }
             return null;
         }
-        bool Checkboard(int[,]first,int [,]second,int size)
+        bool Checkboard(int[,]first,int [,]second,int size)//O(N²)
         {
             for (int i = 0; i < size; i++)
             {
@@ -95,7 +94,7 @@ namespace ConsoleApp1
             }
             return true;
         }
-        private static Tuple<int, int> Move(int x, int y, int i)
+        private static Tuple<int, int> Move(int x, int y, int i)//O(1)
         {
             switch (i)
             {
@@ -112,7 +111,7 @@ namespace ConsoleApp1
             }
         }
 
-        private static bool IsValid(int x, int y, int i, int size)
+        private static bool IsValid(int x, int y, int i, int size)//O(1)
         {
             switch (i)
             {
@@ -141,7 +140,7 @@ namespace ConsoleApp1
             }
         }
 
-        public void Swap(ref int x, ref int y)
+        public void Swap(ref int x, ref int y)//O(1)
         {
             int t = x;
             x = y;

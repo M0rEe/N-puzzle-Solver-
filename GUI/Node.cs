@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 
 
-namespace ConsoleApp1
+namespace GUI
 {
-    class Node 
+    public class Node
     {
         public Node Parent;
-        public UInt16 G,F,H;
+        public UInt16 G, F, H;
         public List<Node> Adjecants;
         public UInt16 X, Y;
         public UInt16 value;
-        public int [,]board;
+        public int[,] board;
         public UInt16 level;
         public UInt16 direction;
         public Node(UInt16 x, UInt16 y, UInt16 value)
@@ -41,7 +41,7 @@ namespace ConsoleApp1
             this.value = value;
         }
 
-        public void CalcH(int choice,int size,int [,]goal) //O(1)
+        public void CalcH(int choice, int size, int[,] goal) //O(1)
         {
             int count = 0;
             switch (choice)
@@ -88,17 +88,17 @@ namespace ConsoleApp1
 
                     //if (this.Parent == null)
                     //{
-                        for (int i = 0; i < size; i++)
+                    for (int i = 0; i < size; i++)
+                    {
+                        for (int j = 0; j < size; j++)
                         {
-                            for (int j = 0; j < size; j++)
-                            {
-                                if (this.board[i, j] == 0) continue;
-                                if (this.board[i, j] != goal[i, j]) count++;
+                            if (this.board[i, j] == 0) continue;
+                            if (this.board[i, j] != goal[i, j]) count++;
 
-                            }
                         }
-                        this.H = Convert.ToUInt16(count);
-                        break;
+                    }
+                    this.H = Convert.ToUInt16(count);
+                    break;
                     //}
                     //int ham = this.Parent.H;
 
@@ -119,16 +119,17 @@ namespace ConsoleApp1
                     //{
                     //    ham--;
                     //}
-                    
-                    
+
+
                     //this.H = Convert.ToUInt16(ham);
                     //break;
             }
-            
+
         }
 
-        public void GetAdjecents(int size ,ref PriorityQ Astarlist,ref int heuristic,ref int [,]goal) //O(Log V)
+        public void GetAdjecents(int size, PriorityQ Astarlist, int heuristic, int[,] goal) //O(Log V)
         {
+
 
             for (UInt16 i = 0; i < 4; i++)
             {
@@ -188,14 +189,15 @@ namespace ConsoleApp1
             {
                 neighbour.G = Convert.ToUInt16(this.G + 1);//O(1)
                 // 0 Manhatten distance , 1 Hamming distance 
-                neighbour.CalcH(heuristic, size,goal);//O(1)
+                neighbour.CalcH(heuristic, size, goal);//O(1)
                 neighbour.F = Convert.ToUInt16(neighbour.G + neighbour.H);
                 neighbour.Parent = this;
+
                 Astarlist.Enqueue(neighbour);//O(Log V)
             }
         }
 
-        public Node Astar(Node startnode,int [,]board,ref int size,ref int[,]goal,int heuristic ,ref bool ReachedGoal)//O(E Log V)
+        public Node Astar(Node startnode, int[,] board, ref int size, int[,] goal, int heuristic, ref bool ReachedGoal)//O(E Log V)
         {
             PriorityQ Astarlist = new PriorityQ();
             Console.WriteLine("Start node at x,y " + startnode.X + " " + startnode.Y);
@@ -207,6 +209,7 @@ namespace ConsoleApp1
             startnode.Parent = null;
             Astarlist.Enqueue(startnode);//O(Log V)
             Node temp;
+
             while (!Astarlist.Empty()) // iterations (max E)  * Complexity body (Log V)
             {
                 temp = Astarlist.Dequeue();//O(Log V)
@@ -218,7 +221,7 @@ namespace ConsoleApp1
                     return temp;
                 }
                 //calculate each neighbour and add it to priorityqueue 
-                temp.GetAdjecents(size, ref Astarlist, ref heuristic, ref goal);//O(Log V)
+                temp.GetAdjecents(size, Astarlist, heuristic, goal);//O(Log V)
                 temp = null; 
             }
             return null;
@@ -276,6 +279,6 @@ namespace ConsoleApp1
             x = y;
             y = t;
         }
-        
+
     }
 }

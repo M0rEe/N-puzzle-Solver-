@@ -88,9 +88,7 @@ namespace ConsoleApp1
             Console.Write("Checking For solvability of the input ");
             System.Threading.Thread.Sleep(500);
             Console.Write(".");
-            System.Threading.Thread.Sleep(500);
             Console.Write(".");
-            System.Threading.Thread.Sleep(500);
             Console.WriteLine(".");
 
 
@@ -123,16 +121,16 @@ namespace ConsoleApp1
                     {
                         if (k == 0)
                             Console.WriteLine("[0]Manhattan     ");
-                        else
-                            Console.WriteLine("[1]Hamming       ");
                         if (heuristic == 1 && k == 1) break;
+                        else if (k == 1) 
+                            Console.WriteLine("[1]Hamming       ");
                         Stopwatch stopwatch = new Stopwatch();
                         bool ReachedGoal = false;
                         // Begin timing
                         stopwatch.Start();
                         System.Threading.Thread.Sleep(500);
                         GC.Collect();
-                        Node temp = startnode.Astar(startnode, board, ref size, goal, k, ref ReachedGoal);//O(E Log V)
+                        Node temp = startnode.Astar(startnode, board, ref size, ref goal, k, ref ReachedGoal);//O(E Log V)
                         stopwatch.Stop();
                         if (!ReachedGoal)
                         {
@@ -293,7 +291,7 @@ namespace ConsoleApp1
         }
         public static int step = 0;
 
-        public static bool PrintpathBFS(BFSNode end, int size)
+        public static bool PrintpathBFS(BFSNode end, int size)//O(S)
         {
             if (end == null) return false;
             PrintpathBFS(end.Parent, size);

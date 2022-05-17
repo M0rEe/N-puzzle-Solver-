@@ -41,7 +41,8 @@ namespace ConsoleApp1
             this.value = value;
         }
 
-        public void CalcH(int choice,int size,int [,]goal) //O(1)
+        // This Function Calculates Heuristic Function ( Manhatten , Hamming ) 
+        public void CalcH(int choice,int size,int [,]goal) //O(1) ==> Manhatten Case , O(S) ==> Hamming Case
         {
             int count = 0;
             switch (choice)
@@ -51,7 +52,7 @@ namespace ConsoleApp1
                     int Row = 0;
                     if (this.Parent == null)
                     {
-                        for (int i = 0; i < size; i++)
+                        for (int i = 0; i < size; i++) 
                         {
                             for (int j = 0; j < size; j++)
                             {
@@ -88,7 +89,7 @@ namespace ConsoleApp1
 
                     //if (this.Parent == null)
                     //{
-                        for (int i = 0; i < size; i++)
+                        for (int i = 0; i < size; i++) // O(S) 
                         {
                             for (int j = 0; j < size; j++)
                             {
@@ -108,8 +109,6 @@ namespace ConsoleApp1
                     //    Console.WriteLine("minus minus {0}", ham);
 
                     //}
-
-
                     //if (this.Parent.value != goal[this.Parent.X, this.Parent.Y])
                     //{
                     //    ham++;
@@ -119,8 +118,7 @@ namespace ConsoleApp1
                     //{
                     //    ham--;
                     //}
-                    
-                    
+ 
                     //this.H = Convert.ToUInt16(ham);
                     //break;
             }
@@ -150,9 +148,10 @@ namespace ConsoleApp1
                             child.Y = Convert.ToUInt16(index.Item2);
                             child.Parent = this;
                             child.direction = i;
+
                             //copying parent board 
-                            Array.Copy(this.board, child.board, size * size); //O(N Square)
-                            child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
+                            Array.Copy(this.board, child.board, size * size); //O(1)
+                            child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]); // O(1)
                             child.level = Convert.ToUInt16(this.level + 1);
                             this.Adjecants.Add(child); //O(1)
                             /*
@@ -176,20 +175,20 @@ namespace ConsoleApp1
                         child.Parent = this;
                         child.direction = i;
                         //copying parent board 
-                        Array.Copy(this.board, child.board, size * size); //O(N Square)
-                        child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
+                        Array.Copy(this.board, child.board, size * size); //O(S)
+                        child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]); // O(1) 
                         child.level = Convert.ToUInt16(this.level + 1);
                         this.Adjecants.Add(child); //O(1)
                     }
                 }
 
             }
-            foreach (var neighbour in this.Adjecants)
+            foreach (var neighbour in this.Adjecants)  // O(1)
             {
                 neighbour.G = Convert.ToUInt16(this.G + 1);//O(1)
                 // 0 Manhatten distance , 1 Hamming distance 
                 neighbour.CalcH(heuristic, size,goal);//O(1)
-                neighbour.F = Convert.ToUInt16(neighbour.G + neighbour.H);
+                neighbour.F = Convert.ToUInt16(neighbour.G + neighbour.H); 
                 neighbour.Parent = this;
                 Astarlist.Enqueue(neighbour);//O(Log V)
             }
@@ -207,7 +206,7 @@ namespace ConsoleApp1
             startnode.Parent = null;
             Astarlist.Enqueue(startnode);//O(Log V)
             Node temp;
-            while (!Astarlist.Empty()) // iterations (max E)  * Complexity body (Log V)
+            while (!Astarlist.IS_Empty()) // iterations (max E)  * Complexity body (Log V)
             {
                 temp = Astarlist.Dequeue();//O(Log V)
                 //if the heuristic value to the peek node is 0 then we reached our goal 

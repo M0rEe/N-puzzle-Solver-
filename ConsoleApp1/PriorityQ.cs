@@ -23,35 +23,35 @@ namespace ConsoleApp1
             while (i > 1 && Arr[i / 2].F >= Arr[i].F)//O(Log V)
             {
                 Swap(ref Arr[i / 2], ref Arr[i]);
-                i = i / 2;//1
+                i = i / 2;//O(1)
             }
         }
-        public Node Dequeue()//O(Log V)
+
+       
+        public Node Dequeue()//O(Log V )
         {
             if (length == 0)
             {
                 throw new InvalidOperationException("queue is Empty");
             }
             Node min = Arr[1];
-            Arr[1] = Arr[length];//1
+            Arr[1] = Arr[length];//O(1)
             length = length - 1;
-            Min_heap(1, length);
+            Min_Heap(1, length);
             return min;
         }
 
-        public bool Empty()
+        public bool IS_Empty() // O(1)
         {
             return (length == 0);
         }
 
-        public int Count() { return length; }
-
-       
-        void Min_heap(int i, int N)//O(Log V)
+        // this function sorts the tree 
+        void Min_Heap(int i, int N)//O(Log V)
         {
-            // to get index of left child of Node at index i 
+            // Left child index
             int left = 2 * i;
-            // to get index of right child of Node at index i
+            // Right child index 
             int right = 2 * i + 1;
             int smallest;
 
@@ -59,16 +59,16 @@ namespace ConsoleApp1
                 smallest = left;
             else
                 smallest = i;
-            if (right <= N && Arr[right].F < Arr[smallest].F)//1
+            if (right <= N && Arr[right].F < Arr[smallest].F)//O(1)
                 smallest = right;
             if (smallest != i)//1
             {
-                Swap(ref Arr[i], ref Arr[smallest]);//1
-                Min_heap(smallest, N);
+                Swap(ref Arr[i], ref Arr[smallest]);//O(1)
+                Min_Heap(smallest, N);
             }
         }
         
-        void Swap(ref Node x, ref Node y)//1
+        void Swap(ref Node x, ref Node y)//O(1)
         {
             Node t = x;
             x = y;

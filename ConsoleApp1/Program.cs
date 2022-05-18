@@ -200,24 +200,27 @@ namespace ConsoleApp1
                 Console.Write(">>>");
                 Console.WriteLine("NOT Solvable");
             }
-            Console.WriteLine("Do you want to print all steps ??   [Y]   OR   [N]");
-            string choice = Console.ReadLine();
-            if (ch == 0)
+            if (Sol)
             {
-
-                if (choice.ToLower().Equals("y"))
+                Console.WriteLine("Do you want to print all steps ??   [Y]   OR   [N]");
+                string choice = Console.ReadLine();
+                if (ch == 0)
                 {
-                    Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
-                    int C = int.Parse(Console.ReadLine());
-                    if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
-                    else Printpath(End,size,C);
+
+                    if (choice.ToLower().Equals("y"))
+                    {
+                        Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
+                        int C = int.Parse(Console.ReadLine());
+                        if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
+                        else Printpath(End,size,C);
+                        Console.WriteLine();
+                    }
+                }else if (ch == 1)
+                {
+                    PrintpathBFS(bfsend, size);
                     Console.WriteLine();
-                }
-            }else if (ch == 1)
-            {
-                PrintpathBFS(bfsend, size);
-                Console.WriteLine();
                 
+                }
             }
             Console.WriteLine("Executed Successfully .... !!");
             Console.ReadKey();

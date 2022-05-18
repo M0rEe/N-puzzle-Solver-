@@ -19,7 +19,7 @@ namespace ConsoleApp1
             string line;
             TextReader origConsole = Console.In;
 
-            file = new FileStream("C:/Users/EGYPT/source/repos/N-puzzle-Solver-/Testcases/Complete/Complete Test/Unsolvable puzzles/15 Puzzle 1 - Unsolvable.txt", FileMode.Open, FileAccess.Read);
+            file = new FileStream("text.txt", FileMode.Open, FileAccess.Read);
 
             sr = new StreamReader(file);
             line = sr.ReadLine();

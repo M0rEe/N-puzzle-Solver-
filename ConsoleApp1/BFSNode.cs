@@ -49,7 +49,7 @@ namespace ConsoleApp1
         }
         static int count = 0;
         //BFS Logic
-        public BFSNode BFS(BFSNode start,int size ,int [,] goalboard)  // O( E Log V )  ???
+        public BFSNode BFS(BFSNode start,int size ,int [,] goalboard)  // O( E V ) 
         {
             List<BFSNode> openlist = new List<BFSNode>();
             List<BFSNode> closedlist = new List<BFSNode>();

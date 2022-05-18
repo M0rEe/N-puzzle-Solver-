@@ -209,6 +209,7 @@ namespace ConsoleApp1
             Node temp;
             while (!Astarlist.Empty()) // iterations (max E)  * Complexity body (Log V)
             {
+              
                 temp = Astarlist.Dequeue();//O(Log V)
                 //if the heuristic value to the peek node is 0 then we reached our goal 
                 if (temp.H == 0)

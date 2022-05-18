@@ -10,6 +10,8 @@ namespace GUI
         public Node[] Arr;
         int length = 0;
 
+
+
         public void Enqueue(Node x)//O(Log V)
         {
             length = length + 1;

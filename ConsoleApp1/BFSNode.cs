@@ -25,7 +25,7 @@ namespace ConsoleApp1
             this.Parent = p;
         }
 
-        public void GetAdjecents(int size)//O(N²)
+        public void GetAdjecents(int size)//O(S)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -35,7 +35,7 @@ namespace ConsoleApp1
                     Tuple<int, int> index = Move(this.X, this.Y, i);//O(1)
                     BFSNode child = new BFSNode(size, board[index.Item1, index.Item2], this.board);//O(1)
                     //copying parent board 
-                    Array.Copy(this.board, child.board, size * size);//O(N²)
+                    Array.Copy(this.board, child.board, size * size);//O(S)
                     child.Swap(ref child.board[this.X, this.Y], ref child.board[index.Item1, index.Item2]);
                     child.X = index.Item1;
                     child.Y = index.Item2;
@@ -48,18 +48,19 @@ namespace ConsoleApp1
             }
         }
         static int count = 0;
-        public BFSNode BFS(BFSNode start,int size ,int [,] goalboard)
+        //BFS Logic
+        public BFSNode BFS(BFSNode start,int size ,int [,] goalboard)  // O( E V ) 
         {
             List<BFSNode> openlist = new List<BFSNode>();
             List<BFSNode> closedlist = new List<BFSNode>();
-            openlist.Add(start);
-            while(openlist.Count > 0)//# iterations E * Complexity of body O(N²) = //O(E*N²) E>N² ?? 
+            openlist.Add(start); // O(1)
+            while(openlist.Count > 0) //# iterations E * Complexity of body O(V) = //O(E*V) 
             {
                 BFSNode current = openlist[0];
-                current.GetAdjecents(size);//O(N²)
-                foreach (var child in current.Adjecents)//O(1)
+                current.GetAdjecents(size);//O(S)
+                foreach (var child in current.Adjecents)//O(1) --> total O(v)
                 {
-                    if (Checkboard(child.board, goalboard, size))//O(N²)
+                    if (Checkboard(child.board, goalboard, size))//O(S)
                     {
                         count++;
                         Console.WriteLine("Found Goal ");
@@ -69,31 +70,35 @@ namespace ConsoleApp1
                         Console.WriteLine("Open list count  = {0} ", openlist.Count);
                         return child;
                     }
-                    if (!openlist.Contains(child) && !closedlist.Contains(child)) //O(N)
+                    if (!openlist.Contains(child) && !closedlist.Contains(child)) // O(v)
                     {
                         child.Parent = current;
                         openlist.Add(child);//O(1)
                         count++;
                     }
                 }
-                openlist.RemoveAt(0);
-                closedlist.Add(current);
-
+                openlist.RemoveAt(0);  // O(1)
+                closedlist.Add(current); // O(1)
             }
             return null;
         }
-        bool Checkboard(int[,]first,int [,]second,int size)//O(N²)
+        // check if the board is alreasy solved or not yet  
+        bool Checkboard(int[,]first,int [,]second,int size)//O(S)
         {
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if (first[i, j] == second[i, j]) continue;
-                    else return false;
+                    if (first[i, j] == second[i, j]) 
+                        continue;
+                    else
+                        return false;
                 }
             }
             return true;
         }
+
+        // creates the move itself 
         private static Tuple<int, int> Move(int x, int y, int i)//O(1)
         {
             switch (i)
@@ -111,6 +116,7 @@ namespace ConsoleApp1
             }
         }
 
+        // Check the next move within board bounders or not 
         private static bool IsValid(int x, int y, int i, int size)//O(1)
         {
             switch (i)

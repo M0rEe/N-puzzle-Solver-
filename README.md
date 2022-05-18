@@ -8,5 +8,5 @@ in BFS as its UN-informed search so its discovering every child from current sta
 
 you can refer to pseudocode for A* and BFS on Wikipedia
 
-this is gif explaning how the algorithm works for solving input puzzle
+this gif explaining how the algorithm works for solving puzzle
 ![Stepsgif](https://user-images.githubusercontent.com/62582432/168497324-64dab066-62d7-4055-a650-19b366e2f255.gif)

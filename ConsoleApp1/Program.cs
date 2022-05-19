@@ -29,10 +29,10 @@ namespace ConsoleApp1
             int ch = -1; //input choice 
             //N puzzle data declaration
             Dictionary<int, List<string>> Row = new Dictionary<int, List<string>>();
-            int indexi=0 , indexj=0;
+            int indexi = 0, indexj = 0;
             for (int i = 0; i < size;) // iterations*body--> size*size--> O(size squared)
             {
-                if(line == "")
+                if (line == "")
                 {
                     line = sr.ReadLine();
                     i = 0;
@@ -45,14 +45,14 @@ namespace ConsoleApp1
                 //calculate Goal State
                 for (int j = 0; j < size; j++) //O(size)
                 {
-                    goal[i, j] = i * size + (j+1);
+                    goal[i, j] = i * size + (j + 1);
                     indexj = j;
                 }
                 indexi = i;
                 i++;
                 line = sr.ReadLine();
             }
-            
+
             goal[indexi, indexj] = 0; // add blank space to goal state
             sr.Close();
             file.Close();
@@ -72,10 +72,10 @@ namespace ConsoleApp1
                 }
             }
 
-            int[,] board  =new int[size,size];
+            int[,] board = new int[size, size];
             //int heuristic = 1;
             //Node Declaration
-            Node[,] element = new Node [size,size];
+            Node[,] element = new Node[size, size];
             Node startnode = new Node();
             Node End = new Node();
             BFSNode bfsend = new BFSNode();
@@ -85,11 +85,11 @@ namespace ConsoleApp1
                 foreach (var el in Row[i]) //O(size)
                 {
                     int j = Row[i].IndexOf(el);
-                    element[i, j] = new Node(Convert.ToUInt16(i), Convert.ToUInt16(j),UInt16.Parse(el));
+                    element[i, j] = new Node(Convert.ToUInt16(i), Convert.ToUInt16(j), UInt16.Parse(el));
                     board[i, j] = int.Parse(el);
                     if (el.Equals("0"))
                     {
-                        startnode = element[i,j];
+                        startnode = element[i, j];
                     }
                 }
             }
@@ -119,12 +119,12 @@ namespace ConsoleApp1
                 {
                     Console.WriteLine("What heuristic function do you want to use ?? [0]Manhattan & hamming  OR   [1]Manhattan only?  ");
                     int heuristic = int.Parse(Console.ReadLine());
-                    if(heuristic != 1 && heuristic != 0)
+                    if (heuristic != 1 && heuristic != 0)
                     {
                         Console.WriteLine("Invalid input");
                         return;
                     }
-                    if(heuristic == 0 )
+                    if (heuristic == 0)
                         Console.WriteLine("Code will run on [0]Manhattan  then   [1]Hamming  ");
                     else
                         Console.WriteLine("Code will run on **Only Manhattan** ");
@@ -133,7 +133,7 @@ namespace ConsoleApp1
                         if (k == 0)
                             Console.WriteLine("[0]Manhattan     ");
                         if (heuristic == 1 && k == 1) break;
-                        else if (k == 1) 
+                        else if (k == 1)
                             Console.WriteLine("[1]Hamming       ");
                         Stopwatch stopwatch = new Stopwatch();
                         bool ReachedGoal = false;
@@ -157,24 +157,25 @@ namespace ConsoleApp1
                         }
                         Console.WriteLine("############################################################");
                     }
-                }else if (ch == 1) // BFS Logic 
+                }
+                else if (ch == 1) // BFS Logic 
                 {
                     BFSNode[,] graph = new BFSNode[size, size];
                     BFSNode firstnode = new BFSNode();
-                     // Extract Frist Node 
+                    // Extract Frist Node 
                     for (int i = 0; i < size; i++)   // O(S square)
                     {
                         foreach (var el in Row[i])   // O (s)
                         {
                             int j = Row[i].IndexOf(el);
-                            graph[i, j] = new BFSNode(size, int.Parse(el), board)  
+                            graph[i, j] = new BFSNode(size, int.Parse(el), board)
                             {
                                 Parent = null,
                                 X = i,
                                 Y = j,
                             };
                             board[i, j] = int.Parse(el);
-                            if (el.Equals("0"))      
+                            if (el.Equals("0"))
                             {
                                 firstnode = graph[i, j];
                             }
@@ -184,7 +185,7 @@ namespace ConsoleApp1
                     // Start time 
                     bfswatch.Start();
                     System.Threading.Thread.Sleep(500);
-                    BFSNode final = firstnode.BFS(firstnode,size,goal);   // O( E ) , Return Last Node (Result)
+                    BFSNode final = firstnode.BFS(firstnode, size, goal);   // O( E ) , Return Last Node (Result)
                     bfsend = final;
                     bfswatch.Stop();
                     if (final != null) // O(S) 
@@ -192,16 +193,16 @@ namespace ConsoleApp1
                         Console.WriteLine(" Found the goal ");
                         Console.WriteLine(">>> Time of solvability : {0}", bfswatch.Elapsed);
                         Console.WriteLine(" board ");
-                        for (int i =0;i< size;i++) // O(S)
+                        for (int i = 0; i < size; i++) // O(S)
                         {
-                            for (int j =0;j < size; j++)
+                            for (int j = 0; j < size; j++)
                             {
                                 Console.Write(final.board[i, j]);
                             }
                             Console.WriteLine();
                         }
                     }
-                    
+
                     else     // If no Solution For the BFS 
                     {
                         Console.WriteLine("Returned null");
@@ -225,7 +226,7 @@ namespace ConsoleApp1
                         Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
                         int C = int.Parse(Console.ReadLine());
                         if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
-                        else Printpath(End,size,C);
+                        else Printpath(End, size, C);
                         Console.WriteLine();
                     }
                 }
@@ -235,16 +236,17 @@ namespace ConsoleApp1
                     Console.WriteLine();
 
                 }
-            }else if (ch == 1)  // For BFS Solution 
+            }
+            else if (ch == 1)  // For BFS Solution 
             {
                 PrintpathBFS(bfsend, size); // Print path for solution , O(S)
                 Console.WriteLine();
-   
+
             }
             Console.WriteLine("Executed Successfully .... !!");
             Console.ReadKey();
         }
-        
+
         // THIS FUNCTION Calculate the total steps, to solve N puzzle 
         static int InversionCount(int N, string[] puzzle)// O[(s)(s)] = O(S Squared)
         {
@@ -261,14 +263,14 @@ namespace ConsoleApp1
                         continue;
                     if (x > y)
                         cnt++;
-                    
+
                 }
             }
             return cnt;
         }
 
         // this function checks if N puzzles solvable or not according to Number of steps and blank space position 
-        static bool CheckSolvability(int N, Dictionary<int, List<string>> puzzle, string[] temp_puzzle , int i) //O(N Squared)O[(s)(s)] = O(S Squared)
+        static bool CheckSolvability(int N, Dictionary<int, List<string>> puzzle, string[] temp_puzzle, int i) //O(N Squared)O[(s)(s)] = O(S Squared)
 
         {
             int cnt = InversionCount(N, temp_puzzle);// O[(s)(s)] = O(S Squared)
@@ -317,20 +319,21 @@ namespace ConsoleApp1
             return true;
         }
 
-        public static bool Printpath(Node end,int size,int C)// Lower Bound: N , Upper bound: O(N^3)
+        public static bool Printpath(Node end, int size, int C)// Lower Bound: N , Upper bound: O(N^3)
         {
             //base case of the recursion 
             if (end == null) //O(1)
             {
                 return false;
             }
-            Printpath(end.Parent,size,C);// firstnode -> parent null 
-            if (C == 0 ) // For printing only Directions 
+            Printpath(end.Parent, size, C);// firstnode -> parent null 
+            if (C == 0) // For printing only Directions 
             {
-                if (end.level == 0) 
+                if (end.level == 0)
                     end.direction = 4;
                 //down 0 , up 1 ,right 2 , left 3
-                switch (end.direction) {
+                switch (end.direction)
+                {
                     case 0:
                         Console.Write("D");
                         break;
@@ -347,7 +350,7 @@ namespace ConsoleApp1
                         break;
                 }
             }
-            else if(C== 1) // For printing the whole path 
+            else if (C == 1) // For printing the whole path 
             {
                 Console.WriteLine("Step # {0} ", end.level);
                 for (int i = 0; i < size; i++) // O(S)

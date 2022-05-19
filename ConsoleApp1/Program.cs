@@ -149,11 +149,11 @@ namespace ConsoleApp1
                         }
                         else
                         {
-                            Console.Write("# of movements ");
+                            Console.Write(" # of movements ");
                             Console.Write(temp.level);
                             End = temp;
                             Console.WriteLine();
-                            Console.WriteLine("Time : {0}", stopwatch.Elapsed);
+                            Console.WriteLine(">>>Time : {0}", stopwatch.Elapsed);
                         }
                         Console.WriteLine("############################################################");
                     }
@@ -189,9 +189,9 @@ namespace ConsoleApp1
                     bfswatch.Stop();
                     if (final != null) // O(S) 
                     {
-                        Console.WriteLine("Found the goal ");
-                        Console.WriteLine("Time of solvability : {0}", bfswatch.Elapsed);
-                        Console.WriteLine("board ");
+                        Console.WriteLine(" Found the goal ");
+                        Console.WriteLine(">>> Time of solvability : {0}", bfswatch.Elapsed);
+                        Console.WriteLine(" board ");
                         for (int i =0;i< size;i++) // O(S)
                         {
                             for (int j =0;j < size; j++)
@@ -213,37 +213,34 @@ namespace ConsoleApp1
                 Console.Write(">>>");
                 Console.WriteLine("NOT Solvable");
             }
+
             if (Sol)
             {
                 Console.WriteLine("Do you want to print all steps ??   [Y]   OR   [N]");
-                string choice = Console.ReadLine();
-                if (ch == 0) // For A star Solution 
+                char c = Console.ReadLine().ToLower()[0];
+                if (ch == 0)
                 {
-                    Console.WriteLine("Do you want to print all steps ??   [Y]   OR   [N]");
-                    if (ch == 0)
+                    if (c.Equals('y'))
                     {
-
-                        if (Console.ReadLine().ToLower().Equals("y"))
-                        {
-                            Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
-                            int C = int.Parse(Console.ReadLine());
-                            if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
-                            else Printpath(End,size,C);
-                            Console.WriteLine();
-                        }
-                    }else if (ch == 1)
-                    {
-                        PrintpathBFS(bfsend, size);
+                        Console.WriteLine("What do you want ??   [0]Only Directions   OR   [1]Full Board");
+                        int C = int.Parse(Console.ReadLine());
+                        if (C != 0 && C != 1) Console.WriteLine("invalid input  ");
+                        else Printpath(End,size,C);
                         Console.WriteLine();
-
-                    }
-                }else if (ch == 1)  // For BFS Solution 
-                {
-                    PrintpathBFS(bfsend, size); // Print path for solution , O(S)
-                    Console.WriteLine();
-                
                     }
                 }
+                else if (ch == 1)
+                {
+                    PrintpathBFS(bfsend, size);
+                    Console.WriteLine();
+
+                }
+            }else if (ch == 1)  // For BFS Solution 
+            {
+                PrintpathBFS(bfsend, size); // Print path for solution , O(S)
+                Console.WriteLine();
+   
+            }
             Console.WriteLine("Executed Successfully .... !!");
             Console.ReadKey();
         }
@@ -269,10 +266,6 @@ namespace ConsoleApp1
             }
             return cnt;
         }
-
-
-
-
 
         // this function checks if N puzzles solvable or not according to Number of steps and blank space position 
         static bool CheckSolvability(int N, Dictionary<int, List<string>> puzzle, string[] temp_puzzle , int i) //O(N Squared)O[(s)(s)] = O(S Squared)

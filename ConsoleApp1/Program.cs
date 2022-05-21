@@ -17,7 +17,7 @@ namespace ConsoleApp1
             int size;
             StreamReader sr;
             string line;
-            TextReader origConsole = Console.In;
+            _ = Console.In;
 
             file = new FileStream("test.txt", FileMode.Open, FileAccess.Read);
 
@@ -27,6 +27,7 @@ namespace ConsoleApp1
             int[,] goal = new int[size, size];
             line = sr.ReadLine();
             int ch = -1; //input choice 
+
             //N puzzle data declaration
             Dictionary<int, List<string>> Row = new Dictionary<int, List<string>>();
             int indexi = 0, indexj = 0;
@@ -112,7 +113,7 @@ namespace ConsoleApp1
                 Console.Write(">>>");
                 Console.WriteLine("Solvable");
                 Console.WriteLine("Time of solvability : {0}", valid.Elapsed);
-                Console.WriteLine("What algorithim do you want to be used??   [0]A*   OR  [1]BFS");
+                Console.WriteLine("What algorithm do you want to be used??   [0]A*   OR  [1]BFS");
                 ch = int.Parse(Console.ReadLine());
 
                 if (ch == 0) // A* Logic
@@ -124,10 +125,12 @@ namespace ConsoleApp1
                         Console.WriteLine("Invalid input");
                         return;
                     }
+
                     if (heuristic == 0)
                         Console.WriteLine("Code will run on [0]Manhattan  then   [1]Hamming  ");
                     else
                         Console.WriteLine("Code will run on **Only Manhattan** ");
+
                     for (int k = 0; k < 2; k++)  //O(1)   // To display the answer in Manhattan and hamming 
                     {
                         if (k == 0)
@@ -135,6 +138,7 @@ namespace ConsoleApp1
                         if (heuristic == 1 && k == 1) break;
                         else if (k == 1)
                             Console.WriteLine("[1]Hamming       ");
+
                         Stopwatch stopwatch = new Stopwatch();
                         bool ReachedGoal = false;
                         // Begin timing , Start to solve 
@@ -143,6 +147,7 @@ namespace ConsoleApp1
                         GC.Collect();
                         Node temp = startnode.Astar(startnode, board, ref size, ref goal, k, ref ReachedGoal);//O(E Log V)
                         stopwatch.Stop();
+
                         if (!ReachedGoal) // If the Astar couldn't solve it 
                         {
                             Console.WriteLine("out of the while ");
@@ -160,7 +165,6 @@ namespace ConsoleApp1
                 }
                 else if (ch == 1) // BFS Logic 
                 {
-                    BFSNode[,] graph = new BFSNode[size, size];
                     BFSNode firstnode = new BFSNode();
                     // Extract Frist Node 
                     for (int i = 0; i < size; i++)   // O(S square)
@@ -168,23 +172,21 @@ namespace ConsoleApp1
                         foreach (var el in Row[i])   // O (s)
                         {
                             int j = Row[i].IndexOf(el);
-                            graph[i, j] = new BFSNode(size, int.Parse(el), board)
-                            {
-                                Parent = null,
-                                X = i,
-                                Y = j,
-                            };
-                            board[i, j] = int.Parse(el);
                             if (el.Equals("0"))
                             {
-                                firstnode = graph[i, j];
+                                firstnode = new BFSNode(size, int.Parse(el), board)
+                                {
+                                    Parent = null,
+                                    X = i,
+                                    Y = j,
+                                };
+                                board[i, j] = int.Parse(el); 
                             }
                         }
                     }
                     Stopwatch bfswatch = new Stopwatch();
                     // Start time 
                     bfswatch.Start();
-                    System.Threading.Thread.Sleep(500);
                     BFSNode final = firstnode.BFS(firstnode, size, goal);   // O( E ) , Return Last Node (Result)
                     bfsend = final;
                     bfswatch.Stop();
